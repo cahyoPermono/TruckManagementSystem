@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: tms_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: tms_db
+    ports:
+      - "5444:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    container_name: tms_backend
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=postgresql://admin:password123@postgres:5432/tms_db?schema=public
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    command: >
+      sh -c "pnpm exec prisma db push && pnpm dev"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: tms_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  frontend-vue:
+    build:
+      context: ./frontend-vue
+    container_name: tms_frontend_vue
+    ports:
+      - "5174:5173" # Maps Vue Vite server to port 5174 on host
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

@@ -1,0 +1,224 @@
+import { create } from 'zustand'
+
+interface Stats {
+  heads: number
+  chassis: number
+  dollies: number
+  tires: number
+  tireStatusCount: { status: string; _count: { id: number } }[]
+  vehicleStatusCount: { status: string; _count: { id: number } }[]
+}
+
+export interface Log {
+  id: string
+  vehicleId: string
+  latitude: number
+  longitude: number
+  speed: number
+  distance: number
+  timestamp: string
+}
+
+export interface Vehicle {
+  id: string
+  kind: 'CAR' | 'LTRUCK' | 'TRUCK' | 'THEAD' | 'TCHASS' | 'TDOLLY'
+  brand: string | null
+  model: string | null
+  imageUrl: string | null
+  modelYear: string | null
+  plateNo: string | null
+  frameNo: string | null
+  nbWheels: number
+  status: string
+  createdAt: string
+  tires?: Tire[]
+  mobilityLogs?: Log[]
+}
+
+export interface TrailSetup {
+  id: string
+  type: string
+  headId: string
+  head: Vehicle
+  totalWheels: number
+  trailers: { trailerId: string, order: number, trailer: Vehicle }[]
+  createdAt: string
+}
+
+export interface Tire {
+  id: string
+  serialNo: string
+  brand: string | null
+  size: string | null
+  status: string
+  mileage: number
+  provisioningDate: string
+  attachedToId: string | null
+  createdAt: string
+}
+
+interface AppState {
+  stats: Stats | null
+  logs: Log[]
+  vehicles: Vehicle[]
+  trails: TrailSetup[]
+  tires: Tire[]
+  fetchStats: () => Promise<void>
+  fetchLogs: () => Promise<void>
+  fetchVehicles: () => Promise<void>
+  createVehicle: (data: any) => Promise<void>
+  fetchTrails: () => Promise<void>
+  createTrail: (data: any) => Promise<void>
+  deleteTrail: (id: string) => Promise<void>
+  fetchTires: () => Promise<void>
+  createTire: (data: any) => Promise<void>
+  updateTireStatus: (id: string, status: string, vehicleId?: string, unitMileage?: number) => Promise<void>
+  isLoading: boolean
+}
+
+const API_BASE = 'http://localhost:4000/api'
+
+export const useStore = create<AppState>((set) => ({
+  stats: null,
+  logs: [],
+  vehicles: [],
+  trails: [],
+  tires: [],
+  isLoading: false,
+
+  fetchStats: async () => {
+    set({ isLoading: true })
+    try {
+      const res = await fetch(`${API_BASE}/dashboard/statistics`)
+      const data = await res.json()
+      set({ stats: data })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  fetchLogs: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/dashboard/mobility-logs`)
+      const data = await res.json()
+      set({ logs: data })
+    } catch (e) {
+      console.error(e)
+    }
+  },
+
+  fetchVehicles: async () => {
+    set({ isLoading: true })
+    try {
+      const res = await fetch(`${API_BASE}/vehicles`)
+      const data = await res.json()
+      set({ vehicles: data })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  createVehicle: async (data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/vehicles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to create vehicle')
+      // Refresh the list
+      useStore.getState().fetchVehicles()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  fetchTrails: async () => {
+    set({ isLoading: true })
+    try {
+      const res = await fetch(`${API_BASE}/trails`)
+      const data = await res.json()
+      set({ trails: data })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  createTrail: async (data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/trails`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to create trail setup')
+      useStore.getState().fetchTrails()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  deleteTrail: async (id: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/trails/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Failed to delete trail')
+      useStore.getState().fetchTrails()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  fetchTires: async () => {
+    set({ isLoading: true })
+    try {
+      const res = await fetch(`${API_BASE}/tires`)
+      const data = await res.json()
+      set({ tires: data })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  createTire: async (data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/tires`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to create tire')
+      useStore.getState().fetchTires()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  updateTireStatus: async (id: string, status: string, vehicleId?: string, unitMileage?: number) => {
+    try {
+      const res = await fetch(`${API_BASE}/tires/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, vehicleId, unitMileage })
+      })
+      if (!res.ok) throw new Error('Failed to update tire status')
+      useStore.getState().fetchTires()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  }
+}))

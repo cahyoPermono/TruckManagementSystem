@@ -1,0 +1,2141 @@
+Tire Management
+System
+Functional & System Design
+
+Administrasi Data Master
+
+● Vehicle
+● Vehicle Trail Setup
+● Tire
+
+Admin Master Vehicle
+CRUD (Create, Read, Update, Delete) data master vehicle dan segmen/bagian dari trailer
+● Jenis:
+○
+○
+○
+○
+○
+○
+
+Car (4 roda) …………………………… [CAR]
+Light Truck (4 roda) ……………… [LTRUCK]
+(Double) Truck (6 roda) ………….[TRUCK]
+Trailer-Head (6-10 roda) ……… [THEAD]
+Trailer-Chassis (12-16 roda)...[TCHASS]
+Trailer-Dolly (8-12 roda) ……….[TDOLLY]
+
+● Proses: create, read (view list/table & view details), update, delete
+
+Admin Master Vehicle
+All
+
+No
+
+Car
+
+ID
+
+Truck
+
+Brand
+
+Trailer Head
+
+Model (Year)
+
+[Page] View List/Table
+Trailer Chassiss
+
++
+
+Trailer Dolly
+
+Plat No
+
+Frame SN
+
+Nb Wheels
+
+1
+
+TCHAS-001
+
+Hino
+
+407 GT (2015)
+
+-
+
+XDC123454
+
+16
+
+2
+
+TCHAS-002
+
+Kobelco
+
+Heavy Duty XT (2011)
+
+-
+
+TRB131359
+
+12
+
+3
+
+THEAD-001
+
+Scania
+
+Avenger T-1 (2022)
+
+B 12345 FN
+
+SCN432567
+
+10
+
+4
+
+TDOLL-001
+
+Kobelco
+
+KB-12345 (2016)
+
+-
+
+TRB847365
+
+12
+
+5
+
+LTRUCK-001
+
+Volvo
+
+Cyber Truck (2022)
+
+B 6789 XA
+
+VOL432567
+
+4
+
+6
+
+CAR-001
+
+Toyota
+
+Hilux GTR
+
+B 674538 TYE
+
+TRB847365
+
+4
+
+Admin Master Vehicle
+All
+
+Car
+
+Truck
+
+THEAD-001
+Scania SC-1 (2019)
+
+Trailer Head
+
+[Page] View List/Table
+Trailer Chassiss
+
++
+
+Trailer Dolly
+
+25.783
+Km
++
+
+Frame No
+
+SC1234324
+
+B 123456 FN | 10
+Wheeler
+
+TDOLLY-001
+Kobelco Falcon Heavy (2015)
+
+15.744
+Km
++
+
+Frame No
+
+KB1234324
+
+- | 12 Wheeler
+
+LTRUCK-002
+Volvo Cyber Truck (2019)
+
+6.890
+Km
++
+B 123456 FN | 10 Wheeler
+
+Frame No
+
+VL1234324
+
+Admin Master Vehicle
+THEAD-001
+
+[Page] View Details
+Status
+
+Manage Tire
+
+Kind
+
+25.783 Km
+
+Trailer Head
+Brand & Model
+
+Number of Wheels
+
+Scania SC-1 (2019)
+
+10
+
+Plate No
+
+B 54357 FV
+
+Tire Data
+
+Frame Serial Number
+
+FG467312644932
+Edit
+
+Delete
+
+Mobility Data
+
+Manage tire? Untuk kasus
+Bayan Resource unit Trailer
+Headnya tidak ditracking dan
+tidak dimanage bannya karena
+ukurannya berbeda dengan
+ukuran ban Chassis dan Dolly
+Dengan demikian, data tentang
+Trailer Headnya boleh jadi
+tidak dientry ke dalam sistem
+
+THEAD-1
+
+Admin Master Vehicle
+
+[Page] Create & Update
+
+THEAD-001
+Trailer Head
+
+Brand & Model
+Scania
+
+SC-1
+
+Number of Wheels
+2019
+
+-
+
+Plate No
+
+Frame Serial No
+
+B 544357 FV
+
+FGX123490432
+
+10
+
+Kind
+
+Please select
+
+Alt B
+
+Car
+Light Truck
+(Double) Truck
+Trailer-Head
+Trailer-Chassis
+Trailer-Dolly
+
+Status
+
+Manage Tires
+
+Kind
+
+Click to upload new image
+
+Status
+
+Brand
+
+Scania
+
+Number of Wheel
+
+-
+
+Plate No
+
+B 86750 FV
+
++
+Frame Serial Number
+(Nomor Rangka)
+
+10
+
+Model/Year
+
++
+
+HD 203 (2019)
+
+Manage Tires
+
+475F89BXP
+
+Tracker Device ID
+FGX123490432
+
+Save
+
+Delete
+
+Alt A
+
+Dengan layout
+persis View Details
+Save
+
+Delete
+
+Admin
+Master
+Vehicle
+Data Deﬁnition & Data Sample
+●
+
+●
+●
+
+Kind …………………………………………. Preﬁx ID
+
+●
+
+○ Car (4 roda) …………………………… [CAR]
+○ Light Truck (4 roda) ……………… [LTRUCK]
+○ (Double) Truck (6 roda) ………….[TRUCK]
+○ Trailer-Head (10 roda) …………. [THEAD]
+○ Trailer-Chassis (12-16 roda)...[TCHASS]
+○ Trailer-Dolly (8-12 roda) ……….[TDOLLY]
+Brand/Make
+Merk Kendaraan
+Model
+Model Kendaraan
+Brand/Make
+
+●
+●
+●
+
+Model
+
+Year
+Tahun model kendaraan
+Plate No
+Nomor Plat Polisi
+Frame Serial No
+Nomor rangka
+Number of Wheels
+Jumlah roda
+
+ID
+
+Kind
+
+Year
+
+Plate No
+
+Frame No
+
+Nb Wheel
+
+TCHASS-001
+
+Trailer Chassis
+
+Kobelco
+
+Falcon Heavy
+5
+
+2022
+
+-
+
+2748249284u
+
+16
+
+LTRUCK-004
+
+Light Truck
+
+Scania
+
+Cyber Truck X
+
+2023
+
+B 34048 BVF
+
+487239847328
+
+4
+
+Administrasi Data Master
+
+● Vehicle
+● Vehicle Trail Setup
+● Tire
+
+Admin Master Vehicle Trail Setup/Conﬁguration
+CRUD (Create, Read, Update, Delete) rangkaian kendaraan gandeng
+● Tipe
+○ Single Trailer [VTS]
+○ Double Trailer [VTD]
+● Trailer Head [THEAD] as Head
+● Proses: create, read (view list/table & view details), update, delete
+
+Admin Master Vehicle Trail Setup [Page] View List/Table
+All
+
+Non Trailer
+
+No
+
+ID VTSeteup
+
+1
+
+Trailer
+
++
+
+Double Trailler
+
+Head
+
+Brand & Model
+
+Plate No
+
+Trailers
+
+Total Wheels
+
+VTD-001
+
+THEAD-002
+
+Scania Heay Duty (2022)
+
+B 12345 FN
+
+TCHASS-003, TDOLLY-005,
+TCHASS-007
+
+44
+
+2
+
+VTS-001
+
+THEAD-001
+
+Scania Avenger T-1 (2022)
+
+B 12345 FN
+
+TCHASS-010
+
+22
+
+3
+
+VTD-001
+
+THEAD-005
+
+Scania Heay Duty (2022)
+
+B 12345 FN
+
+TCHASS-013, TDOLLY-021,
+TCHASS-009
+
+44
+
+4
+
+VTS-002
+
+THEAD-007
+
+Scania Avenger T-1 (2022)
+
+B 12345 FN
+
+TCHASS-011
+
+22
+
+5
+
+VTS-003
+
+THEAD-004
+
+Volvo Cyber Truck (2022)
+
+B 6789 XA
+
+TCHASS-021
+
+22
+
+6
+
+VTS-004
+
+THEAD-006
+
+Scania Avenger T-1 (2022)
+
+B 12345 FN
+
+TCHASS-017
+
+22
+
+Admin Master Vehicle Trail Setup
+All
+
+Single Trailer
+
+VTS-001
+
+Double Trailer
+
+VTD-001
+Single Trailer
+
+VTS-002
+
+Trailer
+
+[Page] View List/Table
++
+
+Double Trailler
+
+THEAD-001
+
+TCHASS-003
+
++
+
+Scania SC-1 (2019) Kobelco Falcon Heavy (2015)
+B 123423 FN,
+12 Wheeler
+10 Wheeler
+
+44
+
+22
+Wheels
+
+TCHASS-003
+
+TDOLLY-005
+
+TCHASS-007
+
+Scania SC-1 (2019)
+B 123423 FN,
+10 Wheeler
+
+Kobelco Falcon Heavy
+(2015)
+16 Wheeler
+
+Kobelco Falcon Heavy
+(2015)
+12 Wheeler
+
+Kobelco Falcon Heavy
+Wheels
+(2015)
+16 Wheeler
+
+THEAD-003
+
+TCHASS-002
+
+THEAD-002
+
++
+
++
+
+Scania SC-1 (2019) Kobelco Falcon Heavy (2015)
+B 123423 FN,
+12 Wheeler
+10 Wheeler
+
+44
+
+22
+Wheels
+
+Admin Master Vehicle Trail Setup
+Double Trailer
+
+44
+
+VTD-001
+
+Wheels
+
+THEAD-001
+Scania SC-1 (2019)
+B 123423 FN,
+10 Wheeler
+
+Tire Data
+
+Mobility Log
+
+TCHASS-003
+Kobelco Falcon Heavy
+(2015)
+16 Wheeler
+
+Tire Data
+
+Mobility Log
+
+Tire Data
+
+Mobility Log
+
+Tire Data
+
+Mobility Log
+
+TDOLLY-005
+Kobelco Falcon Heavy
+(2015)
+12 Wheeler
+TCHASS-002
+Kobelco Falcon Heavy
+(2015)
+16 Wheeler
+
+Edit
+
+[Page] View Details
+
+Delete
+
+Admin Master Vehicle Trail Setup
+Double Trailer
+
+VTD-001
+
+Tipe
+
+44
+
+Double Trailer
+
+Wheels
+
+Head
+THEAD-001
+
+Scania SC-1 (2019), B 123423 FN, 10 Wheeler
+
+HEAD-1
+
+Scania SC-1 (2019), B 123423 FN, 10 Wheeler
+THEAD-2
+
+Scania SC-1 (2019), B 123423 FN, 6 Wheeler
+
+Trailer
+TCHASS-001
+
+Kobelco SC-1 (2019) 16 Wheeler
+
+TDOLLY-003
+
+Hino XYZ2 (2019), 12 Wheeler
++ Trailer
+
+Save
+
+Delete
+
+[Page] Create & Update
+
+Administrasi Data Master
+
+● Vehicle
+● Vehicle Trail Setup
+● Tire
+
+Admin Master Tire
+CRUD (Create, Read, Update, Delete) data master ban
+● Data:
+○
+○
+○
+○
+○
+○
+
+ID: X-{YY pembelian} {3 digit urutan ban di tahun YY}
+No. Seri
+Brand/Make
+Size
+Current Status: New, Attached, Detached, In Repair, Retired
+Provisioning Date (tanggal pembelian)
+
+X-24019
+Tahun 2024 no urut 19
+
+● Proses: create, read (view list/table & view details), update, delete
+
+Admin Master Tire
+All
+
+No
+
+New
+
+ID
+
+Attached
+
+Brand
+
+Detached
+
+Status
+
+[Page] View List/Table
+In Repair
+
++
+
+Retired
+
+Mileage
+(KM)
+
+Size
+
+Serial Number
+
+Provisioning Date
+
+0
+
+635/60/R30
+
+XDC123454
+
+2022-03-15
+
+1
+
+X-22104
+
+Toyo HeavyDuty
+
+New
+
+2
+
+X-19135
+
+Toyo HeavyDuty
+
+Attached to
+TCHASS-03
+
+34.390
+
+635/60/R30
+
+TRB131359
+
+2022-03-15
+
+3
+
+X-21001
+
+Toyo HeavyDuty
+
+In Repair
+
+8.945
+
+635/60/R30
+
+SCN432567
+
+2022-03-15
+
+4
+
+X-20015
+
+Dunlop Monster
+
+Attached to
+TCHASS-03
+
+97.213
+
+635/60/R30
+
+TRB847365
+
+2022-03-15
+
+5
+
+X-18101
+
+Michelin Monster
+
+Retired
+
+135.176
+
+635/60/R30
+
+VOL432567
+
+2022-03-15
+
+6
+
+X-17097
+
+Bridgestone Turanza
+
+Detached
+
+4.218
+
+635/60/R30
+
+TRB847365
+
+2022-03-15
+
+Admin Master Tire
+All
+
+New
+
+Attached
+
+[Page] View List/Table
+Detached
+
+Toyo HeavyDuty
+
+X-23001
+
+X-19035
+
+X-20016
+
+Size: 645/50/R35
+Provisioning Date: 22 Agustus 2023
+
+Bridgestone Turanza
+Size: 645/50/R35
+Provisioning Date: 22 Agustus 2019
+
+Michelin Monster
+Size: 645/50/R35
+Provisioning Date: 22 Agustus 2020
+
+In Repair
+
++
+
+Retired
+
++ 0 Km
+
+Serial No
+
+SC1234324
+
+Status: New
+
+25.783
+Km
++
+
+Serial No
+
+XL482903
+
+Status: Attached to TCHASS-01
+
+13.188
+Km
++
+Status: Attached to TCHASS-01
+
+Serial No
+
+TG8129034
+
+Admin Master Tire
+X-23001
+
+Toyo HeavyDuty
+Serial No
+
+Size
+
+SC1234324
+
+645/50/R35
+
+[Page] View Details
+Mileage
+
+17.893 Km
+
+Provisioning Date
+
+22 Agustus 2023
+Status
+
+Attached to TCHASS-015
+
+Edit
+
+Delete
+
+Tire Log & Mileage Details
+
+Admin Master Tire
+X-23001
+
+[Page] Create & Update
+Mileage
+
+Toyo HeavyDuty
+
+17.893 Km
+
+Serial No
+
+Size
+
+SC123424
+
+645/50/R35
+
+Provisioning Date
+
+22 Agustus 2024
+Status
+
+Attached
+Save
+
+TCHASS-1
+Delete
+
+Tire Log & Mileage Details
+
+Day to Day Operations
+
+● Dashboard
+● Vehicle/Truck & Trailer
+● Tire
+
+Dashboard
+● Dashboard
+● Truck & Trailer
+○ Trailed
+○ Units
+● Tire
+● Administration
+○ Truck & Trailer
+○ Truck Setup
+○ Tire
+
+Truck / Trailer
+
+Popup on click pada
+icon truck
+
+Map (with search function) & basic statistic of assets and their status
+
+List unit rangkaian
+(head, chassis, dolly
+bisa diklik ke view
+detail)
+
+THEAD-013
+Double Trailer
+
+Truck / Trailer
+Tire
+
+VTD-001
+THEAD-002
+
+3.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+TCHASS-007
+
+13.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+TDOLLY-002
+
+13.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+TCHASS-003
+
+13.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+{ or more generic menu}
+
+● Dashboard
+● Vehicle
+○ Trailed
+○ Units
+● Tire
+● Administration
+○ Vehicle
+○ Vehicle Setup
+○ Tire
+
+Number of Truck Head
+
+Number of Truck Chassis
+
+Number of Truck Dolly
+
+Number of Tires
+
+218
+
+512
+
+197
+
+7643
+
+● 192 Active
+● 16 Inactive
+
+● 192 Linked
+● 16 INot linked
+
+Today’s Top 5 Truck Mileage
+THEAD-023
+THEAD-142
+THEAD-041
+THEAD-002
+THEAD-201
+
+127 Km
+108 Km
+97 Km
+96 Km
+87 Km
+
+● 192 Linked
+● 16 INot linked
+
+●
+●
+●
+●
+
+192 New
+16 Attached
+32 Detached
+65 Ub Repair
+
+Day to Day Operations
+
+● Dashboard
+● Vehicle/Truck & Trailer
+○
+
+Trailed
+
+○
+
+All Unit
+
+● Tire
+
+Truck & Trailer >> Trailed
+All
+
+Single Trailer
+
+VTS-001
+
+Double Trailer
+
+VTD-001
+Single Trailer
+
+VTS-002
+
+Trailer
+
+[Page] View List/Table
+Similar to Vehicle Page for Administrator
+
++
+
+Double Trailler
+
+THEAD-001
+
+TCHASS-003
+
++
+
+Scania SC-1 (2019) Kobelco Falcon Heavy (2015)
+B 123423 FN,
+12 Wheeler
+10 Wheeler
+
+44
+
+22
+Wheels
+
+TCHASS-003
+
+TDOLLY-005
+
+TCHASS-007
+
+Scania SC-1 (2019)
+B 123423 FN,
+10 Wheeler
+
+Kobelco Falcon Heavy
+(2015)
+16 Wheeler
+
+Kobelco Falcon Heavy
+(2015)
+12 Wheeler
+
+Kobelco Falcon Heavy
+Wheels
+(2015)
+16 Wheeler
+
+THEAD-003
+
+TCHASS-002
+
+THEAD-002
+
++
+
++
+
+Scania SC-1 (2019) Kobelco Falcon Heavy (2015)
+B 123423 FN,
+12 Wheeler
+10 Wheeler
+
+44
+
+22
+Wheels
+
+Truck & Trailer >> Trailed
+Double Trailer
+
+44
+
+VTD-1
+
+Wheels
+
+THEAD-1
+Scania SC-1 (2019)
+B 123423 FN,
+10 Wheeler
+TCHASS-3
+Kobelco Falcon Heavy
+(2015)
+16 Wheeler
+TDOLLY-5
+Kobelco Falcon Heavy
+(2015)
+12 Wheeler
+TCHASS-3
+Kobelco Falcon Heavy
+(2015)
+16 Wheeler
+
+[Page] View Details Truck & Trailer
+Similar to Vehicle Page for Administrator
+Tire Data
+
+Mobility Log
+When clicked go to this
+unit detail view
+
+Tire Data
+
+Mobility Log
+
+Tire Data
+
+Mobility Log
+
+Tire Data
+
+Mobility Log
+
+Day to Day Operations
+
+● Dashboard
+● Vehicle/Truck & Trailer
+○
+
+Trailed
+
+○
+
+Units
+
+● Tire
+
+Truck & Trailer >> Units
+All
+
+Car
+
+Truck
+
+THEAD-001
+Scania SC-1 (2019)
+
+Trailer Head
+
+[Page] View List/Table
+Similar to Vehicle Page for Administrator
+
+Trailer Chassiss
+
++
+
+Trailer Dolly
+
+25.783
+Km
++
+
+Frame No
+
+SC1234324
+
+B 123456 FN | 10
+Wheeler
+
+TDOLLY-001
+Kobelco Falcon Heavy (2015)
+
+15.744
+Km
++
+
+Frame No
+
+KB1234324
+
+- | 12 Wheeler
+
+LTRUCK-002
+Volvo Cyber Truck (2019)
+
+6.890
+Km
++
+B 123456 FN | 10 Wheeler
+
+Frame No
+
+VL1234324
+
+Truck & Trailer >> Units
+
+[Page] View Details
+
+THEAD-001
+
+25.783 Km
+
+Kind
+
+Status: Active
+
+Trailer Head
+
+Trail
+
+Manage Tire: On
+
+Brand & Model
+
+Number of Wheels
+
+Scania SC-1 (2019)
+
+10
+
+Plate No
+
+Frame Serial Number
+
+B 54357 FV
+
+FG467312644932
+
+Mobility Log
+
+Tire
+
+Truck & Trailer >> Units
+Trail
+Current Trail Setup
+
+[Tab] Trail
+
+Mobility Log
+
+Tire
+
+THEAD-1
+
+Scania SC-1 (2019)
+B 123423 FN,
+10 Wheeler
+
+TCHASS-3
+
+Kobelco Falcon Heavy (2015)
+
+VTD-089
+as Trailer Head
+
+16 Wheeler
+TDOLLY-5
+
+Kobelco Falcon Heavy (2015)
+12 Wheeler
+
+TCHASS-7
+
+Kobelco Falcon Heavy (2015)
+16 Wheeler
+
+When clicked go to this
+unit detail view
+
+Truck & Trailer >> Units
+Trail
+
+Today
+No
+
+Datetime
+
+Mobility Log
+
+This Week
+Long
+
+[Tab] Mobility Log
+
+Tire
+
+Last 30 Days
+Lat
+
+Speed (km/h)
+
+Distance (m)
+
+1
+
+2024-07-15 12:30:00
+
+23.432234432
+
+23.432234432
+
+10
+
+25
+
+2
+
+2024-07-15 12:30:05
+
+23.432234432
+
+23.432234432
+
+13
+
+27
+
+3
+
+2024-07-15 12:30:10
+
+23.432234432
+
+23.432234432
+
+15
+
+30
+
+Truck & Trailer >> Units
+Trail
+
+Mobility Log
+
+Onclick on picture
+selaras highlightnya
+dengan highlight di
+row
+
+No
+
+Tire ID
+
+Tire
+
+2
+
+Ondoubleclik muncul
+pop up ganti ban
+
+[Tab] Tire Data
+
+1
+
+Brand
+
+6
+
+10
+
+5
+
+9
+
+4
+
+8
+
+3
+
+Size
+
+When clicked go to this
+unit detail view
+
+7
+
+Mileage
+
+Action
+
+1
+
+X-20011
+
+Toyo Heavy Duty
+
+645/50/R40
+
+19.587
+
+Change Tire
+
+2
+
+X-23089
+
+Michelin Monster
+
+645/50/R40
+
+13.721
+
+Change Tire
+
+3
+
+X-17022
+
+Bridgestone Turanza
+
+645/50/R40
+
+150.5436
+
+Change Tire
+
+Truck & Trailer >> Units
+Trail
+
+Mobility Log
+
+[Tab] Mobility Log
+
+Tire
+
+Change Tire
+
+Tire Position
+
+2
+2
+
+1
+
+6
+
+10
+
+5
+
+9
+
+4
+
+8
+
+3
+
+7
+
+Date & Time
+
+2
+
+2
+
+2
+
+2
+
+1
+
+1
+
+1
+
+1
+
+2
+
+2
+
+2
+
+2
+
+1
+
+1
+
+1
+
+1
+
+22 Agustus 2024 13:59
+Current Tire
+
+X-19018
+New Tire
+
+X-22109
+No
+
+Tire ID
+
+Brand
+
+Size
+
+Mileage
+
+Distance (m)
+
+1
+
+X-20011
+
+Toyo Heavy Duty
+
+645/50/R40
+
+19.587
+Save
+
+25
+
+2
+
+X-23089
+
+Michelin Monster
+
+645/50/R40
+
+13.721
+
+27
+
+3
+
+X-17022
+
+Bridgestone Turanza
+
+645/50/R40
+
+150.5436
+
+30
+
+Cancel
+
+Day to Day Operations
+
+● Dashboard
+● Vehicle/Truck & Trailer
+○
+
+Trailed
+
+○
+
+Units
+
+● Tire
+
+Tire
+All
+
+[Page] View List/Table
+New
+
+Attached
+
+Detached
+
+Toyo HeavyDuty
+
+X-23001
+
+X-19035
+
+X-20016
+
+Size: 645/50/R35
+Provisioning Date: 22 Agustus 2023
+
+Bridgestone Turanza
+Size: 645/50/R35
+Provisioning Date: 22 Agustus 2019
+
+Michelin Monster
+Size: 645/50/R35
+Provisioning Date: 22 Agustus 2020
+
+In Repair
+
++
+
+Retired
+
++ 0 Km
+
+Serial No
+
+SC1234324
+
+Status: New
+
+25.783
+Km
++
+
+Serial No
+
+XL482903
+
+Status: Attached to TDOLLY-013
+
+13.188
+Km
++
+Status: Attached to TCHASS-071
+
+Serial No
+
+TG8129034
+
+Tire
+X-23001
+
+[Page] View Details
+Mileage
+
+Toyo HeavyDuty
+Serial No
+
+Size
+
+SC1234324
+
+645/50/R35
+
+17.000 Km
+
+Provisioning Date
+
+22 Agustus 2023
+When clicked go to this
+unit detail view
+
+Status
+
+Attached to TCHASS-095
+
+Tire Log
+
+Mileage Details
+
+Tire
+
+[Page] View Details
+Mileage Details
+
+Tire Log
+All
+
+No
+
+New
+
+Attached to
+
+Detached from
+
+Datetime
+
+Activity
+
+1
+
+2024-07-01 09:00:00
+
+Attached to
+
+2
+
+2024-06-15 16:47:00
+
+In Repair
+
+3
+
+2024-06-15 06:47:00
+
+4
+5
+
+In Repair
+
+Unit ID
+
+Unit Mileage
+
+TCHASS-092
+
+5.000
+
+-
+
+-
+
+Detached from
+
+TCHASS-037
+
+20.000
+
+2022-03-07 06:47:00
+
+Attached to
+
+TCHASS-037
+
+5.000
+
+2022-01-12 16:47:00
+
+New
+
+-
+
+-
+
+Tire
+
+[Page] View Details
+
+Tire Log
+
+Misalnya per hari ini (17 Juli 2024) odo
+TCHASS-092 sudah 7.000
+
+Mileage Details
+
+Sementara di 1 Juli masih di 5000 (lihat
+Tire Log di halaman sebeliumnya)
+
+No
+
+Unit ID
+
+From
+
+To
+
+Mileage
+
+1
+
+TCHASS-092
+
+2024-07-21 09:00:00
+
+-
+
+2.000
+
+2
+
+TCHASS-037
+
+2022-03-07 06:47:00
+
+2024-06-15 06:47:00
+
+15.000
+
+AIS Monitoring
+Dashboard
+Functional & System Design
+
+Home AIS
+
+Dashboard
+Truck / Trailer
+
+Popup on click pada
+icon truck
+
+Map (with search function) & basic statistic of assets and their status
+
+List unit rangkaian
+(head, chassis, dolly
+bisa diklik ke view
+detail)
+
+THEAD-013
+Double Trailer
+
+Truck / Trailer
+Tire
+
+VTD-001
+THEAD-002
+
+3.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+TCHASS-007
+
+13.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+TDOLLY-002
+
+13.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+TCHASS-003
+
+13.859 Km
+
+Scania SC-1 (2019) B 123423 FN, 10 Wheeler
+
+Number of Truck Head
+
+Number of Truck Chassis
+
+Number of Truck Dolly
+
+Number of Tires
+
+218
+
+512
+
+197
+
+7643
+
+● 192 Active
+● 16 Inactive
+
+● 192 Linked
+● 16 INot linked
+
+Today’s Top 5 Truck Mileage
+THEAD-023
+THEAD-142
+THEAD-041
+THEAD-002
+THEAD-201
+
+127 Km
+108 Km
+97 Km
+96 Km
+87 Km
+
+● 192 Linked
+● 16 INot linked
+
+●
+●
+●
+●
+
+192 New
+16 Attached
+32 Detached
+65 Ub Repair
+
+Vessel Info >> Pop Up
+
+[Page] View Details
+
+MV. BUANA INDAH (31319845738)
+
+Mon, 25 Nov 2024
+12:27:01 GMT+07
+
+Vessel Type
+
+71 Cargo, Hazardous Cat. A
+Vessel ID
+
+67DSYBDS7
+Device ID
+
+67DSYBDS7
+
+Longitude
+
+Speed
+
+119° 48’ 50.34” E
+
+10
+
+Latitude
+
+Heading
+
+119° 48’ 50.34” E
+
+350
+
+View More
+
+Vessel Info >> Tab Vessel Info [Page] View Details
+MV. BUANA INDAH (31319845738)
+Vessel Type
+
+71 Cargo, Hazardous Cat. A
+Vessel ID
+
+67DSYBDS7
+Device ID
+
+VDN73084420
+Positions
+
+Longitude
+
+Speed
+
+119° 48’ 50.34” E
+
+10
+
+Latitude
+
+Heading
+
+119° 48’ 50.34” E
+Geofencing Log
+
+350
+
+Mon, 25 Nov 2024
+12:27:01 GMT+07
+
+Truck & Trailer >> Units
+Positions
+
+Geofencing Logs
+
+Today
+No
+
+[Tab] Positions
+
+Datetime
+
+This Week
+Long
+
+Last 30 Days
+Lat
+
+Speed (km/h)
+
+Distance (m)
+
+1
+
+2024-07-15 12:30:00
+
+23.432234432
+
+23.432234432
+
+10
+
+25
+
+2
+
+2024-07-15 12:30:05
+
+23.432234432
+
+23.432234432
+
+13
+
+27
+
+3
+
+2024-07-15 12:30:10
+
+23.432234432
+
+23.432234432
+
+15
+
+30
+
+Fishing boat icon
+
+Passanger boat
+
+
