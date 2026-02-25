@@ -12,7 +12,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/login', component: Login, name: 'Login' },
-    { path: '/', component: Dashboard, name: 'Dashboard', meta: { requiresAuth: true } },
+    { path: '/', redirect: '/dashboard' },
+    { path: '/dashboard', component: Dashboard, name: 'Dashboard', meta: { requiresAuth: true } },
     { path: '/vehicles', component: Vehicles, name: 'Vehicles', meta: { requiresAuth: true } },
     { path: '/trails', component: Trails, name: 'Trails', meta: { requiresAuth: true } },
     { path: '/tires', component: Tires, name: 'Tires', meta: { requiresAuth: true } },
@@ -21,15 +22,14 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, _from) => {
   const auth = useAuthStore()
   if (to.meta.requiresAuth && !auth.token) {
-    next('/login')
+    return '/login'
   } else if (to.path === '/login' && auth.token) {
-    next('/')
-  } else {
-    next()
+    return '/dashboard'
   }
+  return true
 })
 
 export default router

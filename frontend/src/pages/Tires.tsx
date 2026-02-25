@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CirclePlus, Loader2, GaugeCircle, History } from "lucide-react"
+import { motion } from "framer-motion"
 
 export default function Tires() {
   const { tires, fetchTires, createTire, updateTireStatus, vehicles, fetchVehicles, isLoading } = useStore()
@@ -76,7 +77,13 @@ export default function Tires() {
   }
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in duration-500">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-6"
+    >
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-50">Tires Master</h2>
@@ -289,6 +296,6 @@ export default function Tires() {
           </Table>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   )
 }

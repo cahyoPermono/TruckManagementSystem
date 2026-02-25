@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Trash2, Link as LinkIcon, LayoutGrid, List, Circle, MapPin } from "lucide-react"
 import { VehicleTiresDialog } from "@/components/VehicleTiresDialog"
 import { VehicleMobilityDialog } from "@/components/VehicleMobilityDialog"
+import { motion } from "framer-motion"
 
 export const TruckSimulation = ({ type, hasHead, hasT1, hasT2 }: { type: string, hasHead: boolean, hasT1: boolean, hasT2: boolean }) => {
   return (
@@ -118,7 +119,13 @@ export default function Trails() {
   }
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in duration-500">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-6"
+    >
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-50">Trail Setups</h2>
@@ -477,6 +484,6 @@ export default function Trails() {
         </CardContent>
       </Card>
       )}
-    </div>
+    </motion.div>
   )
 }

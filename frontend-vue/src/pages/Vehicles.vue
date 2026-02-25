@@ -13,6 +13,7 @@ import { PlusCircle, Loader2, LayoutGrid, List, Image as ImageIcon, Circle, MapP
 import VehicleTiresDialog from '@/components/VehicleTiresDialog.vue'
 import VehicleMobilityDialog from '@/components/VehicleMobilityDialog.vue'
 import VehicleEditDialog from '@/components/VehicleEditDialog.vue'
+import { toast } from 'vue-sonner'
 
 const { data, isLoading } = useVehicles()
 const { mutateAsync: createVehicle, isPending: isSubmitting } = useCreateVehicle()
@@ -55,8 +56,10 @@ const handleSubmit = async (e: Event) => {
     await createVehicle({ ...formData.value })
     isAddOpen.value = false
     formData.value = { ...initialForm }
+    toast.success("Vehicle registered successfully")
   } catch (err) {
     console.error(err)
+    toast.error("Failed to register vehicle")
   }
 }
 

@@ -10,6 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '../stores/auth'
 
@@ -23,7 +28,7 @@ const handleLogout = () => {
 }
 
 const NAV_ITEMS = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Vehicles', href: '/vehicles', icon: Truck },
   { name: 'Trail Setups', href: '/trails', icon: MapPin },
   { name: 'Tires Master', href: '/tires', icon: Settings },
@@ -42,8 +47,8 @@ const isActive = (href: string) => {
 
 <template>
   <div class="flex min-h-screen w-full bg-slate-950 text-slate-50 font-sans selection:bg-blue-600/30">
-    <!-- Sidebar -->
-    <aside class="sticky top-0 h-screen w-64 border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl flex flex-col transition-all duration-300">
+    <!-- Sidebar - Hidden on Mobile -->
+    <aside class="sticky top-0 h-screen w-64 border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl hidden md:flex flex-col transition-all duration-300 z-40">
       <div class="h-16 flex items-center px-6 border-b border-slate-800/60">
         <Truck class="h-6 w-6 text-blue-500 mr-3" />
         <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
@@ -64,7 +69,7 @@ const isActive = (href: string) => {
             'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden',
             isActive(item.href)
               ? 'text-blue-50 bg-blue-600/10 shadow-[inset_0px_1px_1px_rgba(255,255,255,0.05),0px_1px_2px_rgba(0,0,0,0.5)] border border-blue-500/20'
-              : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
+              : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 border border-transparent'
           )"
         >
           <div v-if="isActive(item.href)" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full" />
@@ -79,11 +84,44 @@ const isActive = (href: string) => {
       <!-- Decorative background glow -->
       <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
 
-      <header class="sticky top-0 z-30 h-16 flex items-center justify-between px-8 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md">
+      <header class="sticky top-0 z-30 h-16 flex items-center justify-between px-4 md:px-8 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md">
         <div class="flex items-center gap-4">
-          <button class="md:hidden text-slate-400 hover:text-white">
-            <Menu class="h-5 w-5" />
-          </button>
+          <Sheet>
+            <SheetTrigger as-child>
+               <button class="md:hidden text-slate-400 hover:text-white p-2 -ml-2">
+                 <Menu class="h-5 w-5" />
+               </button>
+            </SheetTrigger>
+            <SheetContent side="left" class="w-72 bg-slate-900 border-r border-slate-800 p-0 text-slate-50">
+              <div class="h-16 flex items-center px-6 border-b border-slate-800/60">
+                <Truck class="h-6 w-6 text-blue-500 mr-3" />
+                <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                  TMS Portal
+                </span>
+              </div>
+              <nav class="w-full flex flex-col gap-2 p-4">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">
+                  Main Menu
+                </div>
+                
+                <RouterLink
+                  v-for="item in NAV_ITEMS"
+                  :key="item.name"
+                  :to="item.href"
+                  :class="cn(
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden',
+                    isActive(item.href)
+                      ? 'text-blue-50 bg-blue-600/10 shadow-[inset_0px_1px_1px_rgba(255,255,255,0.05),0px_1px_2px_rgba(0,0,0,0.5)] border border-blue-500/20'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 border border-transparent'
+                  )"
+                >
+                  <div v-if="isActive(item.href)" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full" />
+                  <component :is="item.icon" :class="cn('h-4 w-4 transition-colors', isActive(item.href) ? 'text-blue-400' : 'group-hover:text-slate-300')" />
+                  {{ item.name }}
+                </RouterLink>
+              </nav>
+            </SheetContent>
+          </Sheet>
           <h1 class="text-xl font-semibold text-slate-100 hidden sm:block">
             {{ currentName }}
           </h1>
@@ -140,7 +178,7 @@ const isActive = (href: string) => {
         </div>
       </header>
 
-      <div class="flex-1 overflow-auto p-8 z-10">
+      <div class="flex-1 overflow-auto p-4 md:p-8 z-10">
         <slot />
       </div>
     </main>

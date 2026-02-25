@@ -128,7 +128,7 @@ const createCustomIcon = (node: any) => {
     className: 'bg-transparent border-none',
     iconSize: [24, 24],
     iconAnchor: [12, 12]
-  })
+  }) as any
 }
 
 const formatDate = (dateString: string) => new Date(dateString).toLocaleString()

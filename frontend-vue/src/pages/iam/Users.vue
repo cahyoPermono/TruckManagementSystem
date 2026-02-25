@@ -4,8 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, Shield, UserCog, Trash2, Edit } from 'lucide-vue-next'
-import UserDialog from '@/components/UserDialog.vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRoles } from '@/composables/useApi'
 import { useAuthStore } from '@/stores/auth'
@@ -17,6 +15,19 @@ interface User {
   roleId: string | null
   role: { name: string } | null
 }
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { toast } from 'vue-sonner'
 
 const authStore = useAuthStore()
 const queryClient = useQueryClient()
@@ -52,11 +63,13 @@ const { mutateAsync: deleteUserApi } = useMutation({
 const loading = computed(() => usersLoading.value)
 const users = computed(() => usersData.value || [])
 
-const deleteUser = async (id: string) => {
+const deleteUser = async (user: User) => {
   try {
-    await deleteUserApi(id)
+    await deleteUserApi(user.id)
+    toast.success(`User ${user.name} deleted successfully`)
   } catch (err) {
     console.error(err)
+    toast.error('Failed to delete user')
   }
 }
 </script>
@@ -117,9 +130,27 @@ const deleteUser = async (id: string) => {
                   <Edit class="w-4 h-4" />
                 </Button>
               </UserDialog>
-              <Button variant="ghost" size="icon" @click="deleteUser(user.id)" class="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
-                <Trash2 class="w-4 h-4" />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger as-child>
+                  <Button variant="ghost" size="icon" class="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                    <Trash2 class="w-4 h-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent class="bg-slate-900 border-slate-800 text-slate-50">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete User</AlertDialogTitle>
+                    <AlertDialogDescription class="text-slate-400">
+                      Are you sure you want to delete user <strong>{{ user.name }}</strong>? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel class="bg-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700">Cancel</AlertDialogCancel>
+                    <AlertDialogAction @click="deleteUser(user)" class="bg-red-600 text-white hover:bg-red-700">
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
           <div v-if="users.length === 0" class="p-8 text-center text-slate-400">No users found.</div>

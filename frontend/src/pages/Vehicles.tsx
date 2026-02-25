@@ -13,6 +13,8 @@ import { VehicleTiresDialog } from "@/components/VehicleTiresDialog"
 import { VehicleMobilityDialog } from "@/components/VehicleMobilityDialog"
 import { VehicleEditDialog } from "@/components/VehicleEditDialog"
 import { Edit } from "lucide-react"
+import { toast } from "sonner"
+import { motion } from "framer-motion"
 
 export default function Vehicles() {
   const { vehicles, fetchVehicles, isLoading, createVehicle } = useStore()
@@ -46,15 +48,23 @@ export default function Vehicles() {
       })
       setIsAddOpen(false)
       setFormData({ id: '', kind: 'THEAD', brand: '', model: '', modelYear: '', plateNo: '', frameNo: '', nbWheels: '10', imageUrl: '' })
+      toast.success("Vehicle registered successfully")
     } catch (err) {
       console.error(err)
+      toast.error("Failed to register vehicle")
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in duration-500">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-6"
+    >
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-50">Vehicles Master</h2>
@@ -419,6 +429,6 @@ export default function Vehicles() {
         </CardContent>
       </Card>
       )}
-    </div>
+    </motion.div>
   )
 }

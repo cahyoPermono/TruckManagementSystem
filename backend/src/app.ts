@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import prismaPlugin from './plugins/prisma'
+import syncPermissionsPlugin from './plugins/sync-permissions'
 import vehicleRoutes from './modules/vehicles/routes'
 import trailRoutes from './modules/trails/routes'
 import tireRoutes from './modules/tires/routes'
@@ -25,6 +26,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   })
   
   await app.register(prismaPlugin)
+  await app.register(syncPermissionsPlugin)
   await app.register(authPlugin)
 
   // Register domain modules (routes)

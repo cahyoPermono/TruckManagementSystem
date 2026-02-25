@@ -10,6 +10,7 @@ import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { TruckSimulation } from "./Trails"
+import { motion } from 'framer-motion'
 
 const COLORS_HEADS = ['#10b981', '#64748b'] // active vs inactive
 const COLORS_CHASSIS = ['#3b82f6', '#f59e0b'] // attached vs detached
@@ -78,7 +79,13 @@ export default function Dashboard() {
   }, [trails, vehicles, searchQuery])
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in duration-500 relative">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-6 relative"
+    >
       <div className="flex justify-between items-end mb-2">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-50">Operation Center</h2>
@@ -340,7 +347,7 @@ export default function Dashboard() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   )
 }
 

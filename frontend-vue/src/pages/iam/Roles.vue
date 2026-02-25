@@ -6,6 +6,18 @@ import { Badge } from '@/components/ui/badge'
 import { Shield, Edit, Trash2 } from 'lucide-vue-next'
 import RoleDialog from '@/components/RoleDialog.vue'
 import { useRoles, usePermissions, useDeleteRole } from '@/composables/useApi'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { toast } from 'vue-sonner'
 
 const { data: rolesData, isLoading: rolesLoading } = useRoles()
 const { data: permissionsData, isLoading: permsLoading } = usePermissions()
@@ -25,11 +37,13 @@ const getPermissionsForModule = (module: string) => {
   return permissions.value.filter((p: any) => p.module === module)
 }
 
-const deleteRole = async (id: string) => {
+const deleteRole = async (role: any) => {
   try {
-    await deleteRoleApi(id)
+    await deleteRoleApi(role.id)
+    toast.success(`Role ${role.name} deleted successfully`)
   } catch (err) {
     console.error(err)
+    toast.error('Failed to delete role')
   }
 }
 </script>
@@ -83,9 +97,27 @@ const deleteRole = async (id: string) => {
                     <Edit class="w-3 h-3" />
                   </Button>
                 </RoleDialog>
-                <Button variant="ghost" size="icon" @click="deleteRole(role.id)" class="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
-                  <Trash2 class="w-3 h-3" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger as-child>
+                    <Button variant="ghost" size="icon" class="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                      <Trash2 class="w-3 h-3" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent class="bg-slate-900 border-slate-800 text-slate-50">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Role</AlertDialogTitle>
+                      <AlertDialogDescription class="text-slate-400">
+                        Are you sure you want to delete role <strong>{{ role.name }}</strong>? This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel class="bg-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700">Cancel</AlertDialogCancel>
+                      <AlertDialogAction @click="deleteRole(role)" class="bg-red-600 text-white hover:bg-red-700">
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </CardContent>
           </Card>

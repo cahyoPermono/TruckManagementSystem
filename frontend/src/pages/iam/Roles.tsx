@@ -6,6 +6,19 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Plus, Shield, Edit, Trash2 } from 'lucide-react'
 import { useStore } from '../../store'
 import { RoleDialog } from '@/components/RoleDialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+import { motion } from "framer-motion"
 
 
 export function Roles() {
@@ -28,7 +41,13 @@ export function Roles() {
   }, [])
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Roles & Permissions</h2>
@@ -74,9 +93,33 @@ export function Roles() {
                         <Edit className="w-3 h-3" />
                       </Button>
                     </RoleDialog>
-                    <Button variant="ghost" size="icon" onClick={() => deleteRole(role.id)} className="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-slate-900 border-slate-800 text-slate-50">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Role</AlertDialogTitle>
+                          <AlertDialogDescription className="text-slate-400">
+                            Are you sure you want to delete the <strong>{role.name}</strong> role? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700">Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={async () => {
+                              await deleteRole(role.id)
+                              toast.success("Role deleted successfully")
+                            }}
+                            className="bg-red-600 text-white hover:bg-red-700"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </CardContent>
               </Card>
@@ -117,6 +160,6 @@ export function Roles() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </motion.div>
   )
 }

@@ -6,6 +6,19 @@ import { Badge } from '@/components/ui/badge'
 import { Plus, Search, Shield, UserCog, Trash2, Edit } from 'lucide-react'
 import { useStore } from '../../store'
 import { UserDialog } from '@/components/UserDialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+import { motion } from "framer-motion"
 
 export function Users() {
   const { users, roles, fetchUsers, fetchRoles, deleteUser } = useStore()
@@ -27,7 +40,13 @@ export function Users() {
   }, [])
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">User Management</h2>
@@ -88,9 +107,33 @@ export function Users() {
                         <Edit className="w-4 h-4" />
                       </Button>
                     </UserDialog>
-                    <Button variant="ghost" size="icon" onClick={() => deleteUser(user.id)} className="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-slate-900 border-slate-800 text-slate-50">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete User</AlertDialogTitle>
+                          <AlertDialogDescription className="text-slate-400">
+                            Are you sure you want to delete user <strong>{user.name}</strong>? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700">Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={async () => {
+                              await deleteUser(user.id)
+                              toast.success("User deleted successfully")
+                            }}
+                            className="bg-red-600 text-white hover:bg-red-700"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               ))}
@@ -101,6 +144,6 @@ export function Users() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   )
 }
