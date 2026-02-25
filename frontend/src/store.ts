@@ -64,16 +64,29 @@ interface AppState {
   vehicles: Vehicle[]
   trails: TrailSetup[]
   tires: Tire[]
+  roles: any[]
+  users: any[]
+  permissions: any[]
   fetchStats: () => Promise<void>
   fetchLogs: () => Promise<void>
   fetchVehicles: () => Promise<void>
   createVehicle: (data: any) => Promise<void>
+  updateVehicle: (id: string, data: any) => Promise<void>
   fetchTrails: () => Promise<void>
   createTrail: (data: any) => Promise<void>
   deleteTrail: (id: string) => Promise<void>
   fetchTires: () => Promise<void>
   createTire: (data: any) => Promise<void>
   updateTireStatus: (id: string, status: string, vehicleId?: string, unitMileage?: number) => Promise<void>
+  fetchRoles: () => Promise<void>
+  createRole: (data: any) => Promise<void>
+  updateRole: (id: string, data: any) => Promise<void>
+  deleteRole: (id: string) => Promise<void>
+  fetchPermissions: () => Promise<void>
+  fetchUsers: () => Promise<void>
+  createUser: (data: any) => Promise<void>
+  updateUser: (id: string, data: any) => Promise<void>
+  deleteUser: (id: string) => Promise<void>
   isLoading: boolean
 }
 
@@ -112,6 +125,9 @@ export const useStore = create<AppState>((set) => ({
   vehicles: [],
   trails: [],
   tires: [],
+  roles: [],
+  permissions: [],
+  users: [],
   isLoading: false,
 
   fetchStats: async () => {
@@ -134,6 +150,136 @@ export const useStore = create<AppState>((set) => ({
       set({ logs: data })
     } catch (e) {
       console.error(e)
+    }
+  },
+
+  fetchRoles: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/roles`, { headers: getAuthHeaders() })
+      const data = await res.json()
+      set({ roles: data })
+    } catch (e) {
+      console.error(e)
+    }
+  },
+
+  createRole: async (data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/roles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to create role')
+      useStore.getState().fetchRoles()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  updateRole: async (id: string, data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/roles/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to update role')
+      useStore.getState().fetchRoles()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  deleteRole: async (id: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/roles/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      })
+      if (!res.ok) throw new Error('Failed to delete role')
+      useStore.getState().fetchRoles()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  fetchPermissions: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/permissions`, { headers: getAuthHeaders() })
+      const data = await res.json()
+      set({ permissions: data })
+    } catch (e) {
+      console.error(e)
+    }
+  },
+
+  fetchUsers: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/users`, { headers: getAuthHeaders() })
+      const data = await res.json()
+      set({ users: data })
+    } catch (e) {
+      console.error(e)
+    }
+  },
+
+  createUser: async (data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to create user')
+      useStore.getState().fetchUsers()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  updateUser: async (id: string, data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/users/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to update user')
+      useStore.getState().fetchUsers()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  deleteUser: async (id: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/iam/users/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      })
+      if (!res.ok) throw new Error('Failed to delete user')
+      useStore.getState().fetchUsers()
+    } catch (e) {
+      console.error(e)
+      throw e
     }
   },
 
@@ -162,6 +308,24 @@ export const useStore = create<AppState>((set) => ({
       })
       if (!res.ok) throw new Error('Failed to create vehicle')
       // Refresh the list
+      useStore.getState().fetchVehicles()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  updateVehicle: async (id: string, data: any) => {
+    try {
+      const res = await fetch(`${API_BASE}/vehicles/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error('Failed to update vehicle')
       useStore.getState().fetchVehicles()
     } catch (e) {
       console.error(e)

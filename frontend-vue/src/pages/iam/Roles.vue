@@ -1,58 +1,37 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Shield, Edit, Trash2 } from 'lucide-vue-next'
-import { useAuthStore } from '../../stores/auth'
+import RoleDialog from '@/components/RoleDialog.vue'
+import { useRoles, usePermissions, useDeleteRole } from '@/composables/useApi'
 
-interface Role {
-  id: string
-  name: string
-  description: string | null
-  permissions: { permission: Permission }[]
-}
+const { data: rolesData, isLoading: rolesLoading } = useRoles()
+const { data: permissionsData, isLoading: permsLoading } = usePermissions()
+const { mutateAsync: deleteRoleApi } = useDeleteRole()
 
-interface Permission {
-  id: string
-  name: string
-  module: string
-}
-
-const roles = ref<Role[]>([])
-const permissions = ref<Permission[]>([])
-const loading = ref(true)
-const authStore = useAuthStore()
+const loading = computed(() => rolesLoading.value || permsLoading.value)
+const roles = computed(() => rolesData.value || [])
+const permissions = computed(() => permissionsData.value || [])
 
 const getModules = () => {
-  return Array.from(new Set(permissions.value.map(p => p.module)))
+  if (!permissions.value) return [] as string[]
+  return Array.from(new Set(permissions.value.map((p: any) => p.module))) as string[]
 }
 
 const getPermissionsForModule = (module: string) => {
-  return permissions.value.filter(p => p.module === module)
+  if (!permissions.value) return []
+  return permissions.value.filter((p: any) => p.module === module)
 }
 
-const fetchData = async () => {
-  loading.value = true
+const deleteRole = async (id: string) => {
   try {
-    const hdrs = authStore.getAuthHeaders()
-    const [roleRes, permRes] = await Promise.all([
-      fetch('http://localhost:4000/api/iam/roles', { headers: hdrs }),
-      fetch('http://localhost:4000/api/iam/permissions', { headers: hdrs })
-    ])
-    
-    if (roleRes.ok) roles.value = await roleRes.json()
-    if (permRes.ok) permissions.value = await permRes.json()
-  } catch (e) {
-    console.error(e)
-  } finally {
-    loading.value = false
+    await deleteRoleApi(id)
+  } catch (err) {
+    console.error(err)
   }
 }
-
-onMounted(() => {
-  fetchData()
-})
 </script>
 
 <template>
@@ -62,10 +41,12 @@ onMounted(() => {
         <h2 class="text-2xl font-bold tracking-tight">Roles & Permissions</h2>
         <p class="text-slate-400">Manage security roles and map permissions to access levels.</p>
       </div>
-      <Button class="bg-indigo-500 hover:bg-indigo-600">
-        <plus class="w-4 h-4 mr-2" />
-        Create Role
-      </Button>
+      <RoleDialog :permissions="permissions || []">
+        <Button class="bg-indigo-500 hover:bg-indigo-600">
+          <plus class="w-4 h-4 mr-2" />
+          Create Role
+        </Button>
+      </RoleDialog>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -97,10 +78,12 @@ onMounted(() => {
               </div>
 
               <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
-                <Button variant="ghost" size="icon" class="h-6 w-6 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
-                  <Edit class="w-3 h-3" />
-                </Button>
-                <Button variant="ghost" size="icon" class="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                <RoleDialog :role="role" :permissions="permissions || []">
+                  <Button variant="ghost" size="icon" class="h-6 w-6 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
+                    <Edit class="w-3 h-3" />
+                  </Button>
+                </RoleDialog>
+                <Button variant="ghost" size="icon" @click="deleteRole(role.id)" class="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
                   <Trash2 class="w-3 h-3" />
                 </Button>
               </div>
@@ -112,14 +95,14 @@ onMounted(() => {
       <!-- Permissions Grid Matrix (Viewer) -->
       <Card class="lg:col-span-3 bg-slate-900/50 border-slate-800">
         <CardHeader class="border-b border-slate-800">
-          <CardTitle class="text-lg flex items-center gap-2">
+          <CardTitle class="text-lg flex items-center gap-2 text-slate-50">
              <Shield class="w-5 h-5 text-indigo-400" />
              Permission Matrix Reference
           </CardTitle>
         </CardHeader>
         <CardContent class="p-6">
           <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
-             <div v-for="module in getModules()" :key="module" class="bg-slate-950/50 rounded-lg p-4 border border-slate-800/50">
+            <div v-for="module in getModules()" :key="module" class="bg-slate-950/50 rounded-lg p-4 border border-slate-800/50">
                 <h4 class="text-sm font-semibold text-slate-300 mb-3 pb-2 border-b border-slate-800">{{ module }}</h4>
                 <div class="space-y-2">
                   <div v-for="p in getPermissionsForModule(module)" :key="p.id" class="flex items-center space-x-2">

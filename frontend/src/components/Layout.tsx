@@ -1,6 +1,14 @@
 import type { FC, ReactNode } from "react"
 import { LayoutDashboard, Truck, Settings, Menu, Bell, CircleUser, MapPin, LogOut, Shield } from "lucide-react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from '../store'
 
@@ -80,10 +88,36 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-full hover:bg-slate-800">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-slate-950 animate-pulse" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-full hover:bg-slate-800">
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-slate-950 animate-pulse" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80 bg-slate-900 border-slate-800 text-slate-200">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-slate-800" />
+                <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer hover:bg-slate-800 focus:bg-slate-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="font-medium text-sm text-slate-100">System Update</span>
+                  </div>
+                  <span className="text-xs text-slate-400">Welcome to TMS v1.1. Role management is now online.</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer hover:bg-slate-800 focus:bg-slate-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="font-medium text-sm text-slate-100">Vehicle Assigned</span>
+                  </div>
+                  <span className="text-xs text-slate-400">Chassis C-102 was attached to Truck H-204</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-slate-800" />
+                <DropdownMenuItem className="justify-center text-xs text-blue-400 hover:text-blue-300 focus:text-blue-300 cursor-pointer">
+                  Mark all as read
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             {/* User Profile */}
             <div className="flex items-center gap-4 pl-4 border-l border-slate-800">

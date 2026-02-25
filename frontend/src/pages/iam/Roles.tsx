@@ -4,38 +4,18 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Plus, Shield, Edit, Trash2 } from 'lucide-react'
-import { useAuthStore } from '../../store'
+import { useStore } from '../../store'
+import { RoleDialog } from '@/components/RoleDialog'
 
-interface Role {
-  id: string
-  name: string
-  description: string | null
-  permissions: { permission: Permission }[]
-}
-
-interface Permission {
-  id: string
-  name: string
-  module: string
-}
 
 export function Roles() {
-  const [roles, setRoles] = useState<Role[]>([])
-  const [permissions, setPermissions] = useState<Permission[]>([])
+  const { roles, permissions, fetchRoles, fetchPermissions, deleteRole } = useStore()
   const [loading, setLoading] = useState(true)
-  const token = useAuthStore(state => state.token)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const hdrs = { 'Authorization': `Bearer ${token}` }
-      const [roleRes, permRes] = await Promise.all([
-        fetch('http://localhost:4000/api/iam/roles', { headers: hdrs }),
-        fetch('http://localhost:4000/api/iam/permissions', { headers: hdrs })
-      ])
-      
-      if (roleRes.ok) setRoles(await roleRes.json())
-      if (permRes.ok) setPermissions(await permRes.json())
+      await Promise.all([fetchRoles(), fetchPermissions()])
     } catch (e) {
       console.error(e)
     } finally {
@@ -54,10 +34,12 @@ export function Roles() {
           <h2 className="text-2xl font-bold tracking-tight">Roles & Permissions</h2>
           <p className="text-slate-400">Manage security roles and map permissions to access levels.</p>
         </div>
-        <Button className="bg-indigo-500 hover:bg-indigo-600">
-          <Plus className="w-4 h-4 mr-2" />
-          Create Role
-        </Button>
+        <RoleDialog permissions={permissions}>
+          <Button className="bg-indigo-500 hover:bg-indigo-600">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Role
+          </Button>
+        </RoleDialog>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -87,10 +69,12 @@ export function Roles() {
                   </div>
 
                   <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                    <RoleDialog role={role} permissions={permissions}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                    </RoleDialog>
+                    <Button variant="ghost" size="icon" onClick={() => deleteRole(role.id)} className="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
                       <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
@@ -103,7 +87,7 @@ export function Roles() {
         {/* Permissions Grid Matrix (Viewer) */}
         <Card className="lg:col-span-3 bg-slate-900/50 border-slate-800">
           <CardHeader className="border-b border-slate-800">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-slate-50">
                <Shield className="w-5 h-5 text-indigo-400" />
                Permission Matrix Reference
             </CardTitle>

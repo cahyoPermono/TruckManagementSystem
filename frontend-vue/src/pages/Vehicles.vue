@@ -9,9 +9,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { PlusCircle, Loader2, LayoutGrid, List, Image as ImageIcon, Circle, MapPin } from 'lucide-vue-next'
+import { PlusCircle, Loader2, LayoutGrid, List, Image as ImageIcon, Circle, MapPin, Edit } from 'lucide-vue-next'
 import VehicleTiresDialog from '@/components/VehicleTiresDialog.vue'
 import VehicleMobilityDialog from '@/components/VehicleMobilityDialog.vue'
+import VehicleEditDialog from '@/components/VehicleEditDialog.vue'
 
 const { data, isLoading } = useVehicles()
 const { mutateAsync: createVehicle, isPending: isSubmitting } = useCreateVehicle()
@@ -231,6 +232,11 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                      View Tires
                    </Button>
                 </VehicleTiresDialog>
+                <VehicleEditDialog :vehicle="v">
+                   <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px] text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
+                     Edit
+                   </Button>
+                </VehicleEditDialog>
               </div>
             </div>
             <div class="flex justify-between text-sm items-center pt-2 border-t border-slate-800/60">
@@ -310,6 +316,11 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                        <MapPin class="h-3 w-3" />
                      </Button>
                   </VehicleMobilityDialog>
+                  <VehicleEditDialog :vehicle="v">
+                     <Button variant="ghost" size="icon" class="h-6 w-6 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300" title="Edit Vehicle">
+                       <Edit class="h-3 w-3" />
+                     </Button>
+                  </VehicleEditDialog>
                 </div>
               </TableCell>
               <TableCell>

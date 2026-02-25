@@ -2,6 +2,14 @@
 import { computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { LayoutDashboard, Truck, Settings, Menu, Bell, CircleUser, MapPin, LogOut, Shield } from 'lucide-vue-next'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '../stores/auth'
 
@@ -81,10 +89,36 @@ const isActive = (href: string) => {
           </h1>
         </div>
         <div class="flex items-center gap-4">
-          <button class="relative p-2 text-slate-400 hover:text-white transition-colors rounded-full hover:bg-slate-800">
-            <Bell class="h-5 w-5" />
-            <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-slate-950 animate-pulse" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <button class="relative p-2 text-slate-400 hover:text-white transition-colors rounded-full hover:bg-slate-800">
+                <Bell class="h-5 w-5" />
+                <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-slate-950 animate-pulse" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-80 bg-slate-900 border-slate-800 text-slate-200">
+              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              <DropdownMenuSeparator class="bg-slate-800" />
+              <DropdownMenuItem class="flex flex-col items-start gap-1 p-3 cursor-pointer hover:bg-slate-800 focus:bg-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-blue-500" />
+                  <span class="font-medium text-sm text-slate-100">System Update</span>
+                </div>
+                <span class="text-xs text-slate-400">Welcome to TMS v1.1. Role management is now online.</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem class="flex flex-col items-start gap-1 p-3 cursor-pointer hover:bg-slate-800 focus:bg-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span class="font-medium text-sm text-slate-100">Vehicle Assigned</span>
+                </div>
+                <span class="text-xs text-slate-400">Chassis C-102 was attached to Truck H-204</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator class="bg-slate-800" />
+              <DropdownMenuItem class="justify-center text-xs text-blue-400 hover:text-blue-300 focus:text-blue-300 cursor-pointer">
+                Mark all as read
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <!-- User Profile -->
           <div class="flex items-center gap-4 pl-4 border-l border-slate-800">

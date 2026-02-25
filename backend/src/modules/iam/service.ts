@@ -61,9 +61,10 @@ export const IamService = (prisma: PrismaClient) => ({
       }
     })
 
-    if (data.permissionIds?.length) {
+    const perms = data.permissions || data.permissionIds
+    if (perms?.length) {
       await prisma.rolePermission.createMany({
-        data: data.permissionIds.map((pid: string) => ({ roleId: role.id, permissionId: pid }))
+        data: perms.map((pid: string) => ({ roleId: role.id, permissionId: pid }))
       })
     }
 
@@ -79,13 +80,14 @@ export const IamService = (prisma: PrismaClient) => ({
       }
     })
 
-    if (data.permissionIds) {
+    const perms = data.permissions || data.permissionIds
+    if (perms) {
       // Clear existing
       await prisma.rolePermission.deleteMany({ where: { roleId: id } })
       // Insert new
-      if (data.permissionIds.length) {
+      if (perms.length) {
         await prisma.rolePermission.createMany({
-          data: data.permissionIds.map((pid: string) => ({ roleId: id, permissionId: pid }))
+          data: perms.map((pid: string) => ({ roleId: id, permissionId: pid }))
         })
       }
     }

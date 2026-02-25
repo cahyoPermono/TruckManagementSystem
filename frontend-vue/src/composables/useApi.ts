@@ -8,9 +8,163 @@ export function useStats() {
     queryKey: ['stats'],
     queryFn: async () => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/dashboard/stats`, { headers: auth.getAuthHeaders() })
+      const res = await fetch(`${API_URL}/dashboard/statistics`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load stats')
       return res.json()
+    }
+  })
+}
+
+export function useRoles() {
+  return useQuery({
+    queryKey: ['roles'],
+    queryFn: async () => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/roles`, { headers: auth.getAuthHeaders() })
+      if (!res.ok) throw new Error('Failed to load roles')
+      return res.json()
+    }
+  })
+}
+
+export function usePermissions() {
+  return useQuery({
+    queryKey: ['permissions'],
+    queryFn: async () => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/permissions`, { headers: auth.getAuthHeaders() })
+      if (!res.ok) throw new Error('Failed to load permissions')
+      return res.json()
+    }
+  })
+}
+
+export function useCreateRole() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (newRole: any) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/roles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
+        body: JSON.stringify(newRole)
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to create role')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] })
+    }
+  })
+}
+
+export function useUpdateRole() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/roles/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to update role')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] })
+    }
+  })
+}
+
+export function useDeleteRole() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (roleId: string) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/roles/${roleId}`, {
+        method: 'DELETE',
+        headers: auth.getAuthHeaders()
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to delete role')
+      }
+      return { id: roleId }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] })
+    }
+  })
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (newUser: any) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
+        body: JSON.stringify(newUser)
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to create user')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    }
+  })
+}
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to update user')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    }
+  })
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/iam/users/${userId}`, {
+        method: 'DELETE',
+        headers: auth.getAuthHeaders()
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to delete user')
+      }
+      return { id: userId }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
     }
   })
 }
@@ -64,6 +218,29 @@ export function useCreateVehicle() {
       if (!res.ok) {
         const err = await res.json()
         throw new Error(err.message || 'Failed to create vehicle')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
+    }
+  })
+}
+
+export function useUpdateVehicle() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/vehicles/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
+        body: JSON.stringify(data)
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to update vehicle')
       }
       return res.json()
     },

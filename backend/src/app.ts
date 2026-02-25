@@ -20,6 +20,8 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(helmet)
   await app.register(cors, {
     origin: '*', // For development, allow all. In production, restrict this.
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   })
   
   await app.register(prismaPlugin)

@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Search, Shield, UserCog, Trash2, Edit } from 'lucide-vue-next'
-import { useAuthStore } from '../../stores/auth'
+import UserDialog from '@/components/UserDialog.vue'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useRoles } from '@/composables/useApi'
+import { useAuthStore } from '@/stores/auth'
 
 interface User {
   id: string
@@ -13,32 +16,49 @@ interface User {
   username: string
   roleId: string | null
   role: { name: string } | null
-  createdAt: string
 }
 
-const users = ref<User[]>([])
-const loading = ref(true)
 const authStore = useAuthStore()
+const queryClient = useQueryClient()
 
-const fetchUsers = async () => {
-  loading.value = true
-  try {
+const { data: rolesData } = useRoles()
+const roles = computed(() => rolesData.value || [])
+
+const { data: usersData, isLoading: usersLoading } = useQuery({
+  queryKey: ['users'],
+  queryFn: async () => {
     const res = await fetch('http://localhost:4000/api/iam/users', {
       headers: authStore.getAuthHeaders()
     })
-    if (res.ok) {
-      users.value = await res.json()
-    }
-  } catch (e) {
-    console.error(e)
-  } finally {
-    loading.value = false
+    if (!res.ok) throw new Error('Failed to fetch users')
+    return res.json()
+  }
+})
+
+const { mutateAsync: deleteUserApi } = useMutation({
+  mutationFn: async (userId: string) => {
+    const res = await fetch(`http://localhost:4000/api/iam/users/${userId}`, {
+      method: 'DELETE',
+      headers: authStore.getAuthHeaders()
+    })
+    if (!res.ok) throw new Error('Failed to delete user')
+    return userId
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['users'] })
+  }
+})
+
+const loading = computed(() => usersLoading.value)
+const users = computed(() => usersData.value || [])
+
+const deleteUser = async (id: string) => {
+  try {
+    await deleteUserApi(id)
+  } catch (err) {
+    console.error(err)
   }
 }
-
-onMounted(() => {
-  fetchUsers()
-})
 </script>
 
 <template>
@@ -48,15 +68,17 @@ onMounted(() => {
         <h2 class="text-2xl font-bold tracking-tight">User Management</h2>
         <p class="text-slate-400">View and manage system users and their assigned roles.</p>
       </div>
-      <Button class="bg-indigo-500 hover:bg-indigo-600">
-        <Plus class="w-4 h-4 mr-2" />
-        Add User
-      </Button>
+      <UserDialog :roles="roles">
+        <Button class="bg-indigo-500 hover:bg-indigo-600">
+          <Plus class="w-4 h-4 mr-2" />
+          Add User
+        </Button>
+      </UserDialog>
     </div>
 
     <Card class="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
       <CardHeader class="border-b border-slate-800 flex flex-row items-center justify-between">
-        <CardTitle class="text-lg">System Users</CardTitle>
+        <CardTitle class="text-lg text-slate-50">System Users</CardTitle>
         <div class="relative w-64">
           <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
           <Input
@@ -90,10 +112,12 @@ onMounted(() => {
             </div>
             
             <div class="flex items-center gap-2">
-              <Button variant="ghost" size="icon" class="text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
-                <Edit class="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon" class="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+              <UserDialog :user="user" :roles="roles">
+                <Button variant="ghost" size="icon" class="text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
+                  <Edit class="w-4 h-4" />
+                </Button>
+              </UserDialog>
+              <Button variant="ghost" size="icon" @click="deleteUser(user.id)" class="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
                 <Trash2 class="w-4 h-4" />
               </Button>
             </div>

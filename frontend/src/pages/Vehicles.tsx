@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusCircle, Loader2, LayoutGrid, List, Image as ImageIcon, Circle, MapPin } from "lucide-react"
 import { VehicleTiresDialog } from "@/components/VehicleTiresDialog"
 import { VehicleMobilityDialog } from "@/components/VehicleMobilityDialog"
+import { VehicleEditDialog } from "@/components/VehicleEditDialog"
+import { Edit } from "lucide-react"
 
 export default function Vehicles() {
   const { vehicles, fetchVehicles, isLoading, createVehicle } = useStore()
@@ -305,6 +307,11 @@ export default function Vehicles() {
                              View Tires
                            </Button>
                         </VehicleTiresDialog>
+                        <VehicleEditDialog vehicle={v}>
+                           <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
+                             Edit
+                           </Button>
+                        </VehicleEditDialog>
                       </div>
                     </div>
                     <div className="flex justify-between text-sm items-center pt-2 border-t border-slate-800/60">
@@ -390,6 +397,11 @@ export default function Vehicles() {
                              <MapPin className="h-3 w-3" />
                            </Button>
                         </VehicleMobilityDialog>
+                        <VehicleEditDialog vehicle={v}>
+                           <Button variant="ghost" size="icon" className="h-6 w-6 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300" title="Edit Vehicle">
+                             <Edit className="h-3 w-3" />
+                           </Button>
+                        </VehicleEditDialog>
                       </div>
                     </TableCell>
                     <TableCell>

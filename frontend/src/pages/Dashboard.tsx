@@ -197,7 +197,7 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 h-[240px] flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="99%" height={200} minWidth={0} minHeight={0}>
                 <PieChart>
                   <Pie
                     data={headData}
@@ -231,7 +231,7 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 h-[240px] flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="99%" height={200} minWidth={0} minHeight={0}>
                 <PieChart>
                   <Pie
                     data={chassisData}

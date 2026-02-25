@@ -22,6 +22,7 @@ export default fp(async (fastify, opts) => {
   })
 
   fastify.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
+    if (request.method === 'OPTIONS') return
     try {
       await request.jwtVerify()
     } catch (err) {
@@ -31,6 +32,8 @@ export default fp(async (fastify, opts) => {
 
   fastify.decorate('verifyPermission', function (requiredPermission: string) {
     return async function (request: FastifyRequest, reply: FastifyReply) {
+      if (request.method === 'OPTIONS') return
+      
       // First ensure the user is authenticated
       await fastify.authenticate(request, reply)
       
