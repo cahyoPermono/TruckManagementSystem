@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useRoles } from '@/composables/useApi'
 import { useAuthStore } from '@/stores/auth'
+import UserDialog from '@/components/UserDialog.vue'
+import { Plus, Search, Shield, UserCog, Edit, Trash2 } from 'lucide-vue-next'
 
 interface User {
   id: string
@@ -144,7 +146,7 @@ const deleteUser = async (user: User) => {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel class="bg-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
                     <AlertDialogAction @click="deleteUser(user)" class="bg-red-600 text-white hover:bg-red-700">
                       Delete
                     </AlertDialogAction>

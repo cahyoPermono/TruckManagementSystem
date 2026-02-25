@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 export function RoleDialog({ role, children, permissions }: { role?: any, children: React.ReactNode, permissions: any[] }) {
   const { createRole, updateRole } = useStore()
@@ -24,8 +25,10 @@ export function RoleDialog({ role, children, permissions }: { role?: any, childr
     try {
       if (isEdit) {
         await updateRole(role.id, formData)
+        toast.success("Role updated successfully")
       } else {
         await createRole(formData)
+        toast.success("Role created successfully")
       }
       setIsOpen(false)
       if (!isEdit) {
@@ -33,6 +36,7 @@ export function RoleDialog({ role, children, permissions }: { role?: any, childr
       }
     } catch (err) {
       console.error(err)
+      toast.error("Failed to save role")
     } finally {
       setIsSubmitting(false)
     }
@@ -120,9 +124,6 @@ export function RoleDialog({ role, children, permissions }: { role?: any, childr
         </div>
 
         <DialogFooter className="pt-4 border-t border-slate-800 mt-auto">
-          <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100">
-            Cancel
-          </Button>
           <Button type="submit" form="role-form" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {isEdit ? 'Save Changes' : 'Create Role'}

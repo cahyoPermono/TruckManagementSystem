@@ -6,6 +6,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -13,6 +24,7 @@ import { Loader2, Trash2, Link as LinkIcon, LayoutGrid, List, Circle, MapPin } f
 import TruckSimulation from '@/components/TruckSimulation.vue'
 import VehicleTiresDialog from '@/components/VehicleTiresDialog.vue'
 import VehicleMobilityDialog from '@/components/VehicleMobilityDialog.vue'
+import { toast } from 'vue-sonner'
 
 const { data: trailsData, isLoading } = useTrails()
 const { data: vehiclesData } = useVehicles()
@@ -49,20 +61,26 @@ const handleSubmit = async (e: Event) => {
       trailers: trailerData
     })
     
+    toast.success('Trail setup created successfully')
+    
     isAddOpen.value = false
     id.value = ''
     type.value = 'SINGLE_TRAILER'
     headId.value = ''
     trailer1.value = ''
     trailer2.value = ''
-  } catch (err) {
+  } catch (err: any) {
+    toast.error(err.message || 'Failed to create trail setup')
     console.error(err)
   }
 }
 
 const handleDelete = async (trailId: string) => {
-  if (confirm('Are you sure you want to delete this trail setup?')) {
+  try {
     await deleteTrail(trailId)
+    toast.success('Trail setup deleted successfully')
+  } catch (err: any) {
+    toast.error(err.message || 'Failed to delete trail setup')
   }
 }
 </script>
@@ -194,9 +212,27 @@ const handleDelete = async (trailId: string) => {
               {{ t.type }}
             </Badge>
           </div>
-          <Button variant="ghost" size="icon" @click="handleDelete(t.id)" class="text-red-400 hover:text-red-300 hover:bg-red-400/10">
-            <Trash2 class="h-4 w-4" />
-          </Button>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" class="text-red-400 hover:text-red-300 hover:bg-red-400/10">
+                <Trash2 class="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent class="bg-slate-900 border border-slate-800 text-slate-50">
+              <AlertDialogHeader>
+                <AlertDialogTitle class="text-slate-100">Delete Trail Setup</AlertDialogTitle>
+                <AlertDialogDescription class="text-slate-400">
+                  Are you sure you want to delete the configuration <span class="text-slate-200 font-bold">{{ t.id }}</span>? 
+                  This will virtually detach the head unit and trailers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
+                <AlertDialogAction @click="handleDelete(t.id)" class="bg-red-600 text-white hover:bg-red-700">Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardHeader>
         <CardContent class="pt-4 flex-1 flex flex-col gap-4">
           
@@ -348,9 +384,25 @@ const handleDelete = async (trailId: string) => {
                 {{ t.totalWheels }}
               </TableCell>
               <TableCell class="text-right">
-                <Button variant="ghost" size="icon" @click="handleDelete(t.id)" class="text-red-400 hover:text-red-300 hover:bg-red-400/10">
-                  <Trash2 class="h-4 w-4" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" class="text-red-400 hover:text-red-300 hover:bg-red-400/10">
+                      <Trash2 class="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent class="bg-slate-900 border border-slate-800 text-slate-50">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle class="text-slate-100">Delete Trail Setup</AlertDialogTitle>
+                      <AlertDialogDescription class="text-slate-400">
+                        Are you sure you want to delete the configuration <span class="text-slate-200 font-bold">{{ t.id }}</span>? 
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
+                      <AlertDialogAction @click="handleDelete(t.id)" class="bg-red-600 text-white hover:bg-red-700">Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TableCell>
             </TableRow>
           </TableBody>

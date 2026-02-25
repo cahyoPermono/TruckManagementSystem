@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from '../store'
 
@@ -88,6 +88,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
                 </button>
               </SheetTrigger>
               <SheetContent side="left" className="w-72 bg-slate-900 border-r border-slate-800 p-0 text-slate-50">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="h-16 flex items-center px-6 border-b border-slate-800/60">
                   <Truck className="h-6 w-6 text-blue-500 mr-3" />
                   <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2 } from 'lucide-vue-next'
 import { useCreateRole, useUpdateRole } from '@/composables/useApi'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{
   role?: any
@@ -52,13 +53,16 @@ const handleSubmit = async (e: Event) => {
   try {
     if (isEdit.value) {
       await updateRole({ id: props.role.id, data: formData.value })
+      toast.success("Role updated successfully")
     } else {
       await createRole(formData.value)
+      toast.success("Role created successfully")
       formData.value = { name: '', description: '', permissions: [] }
     }
     isOpen.value = false
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
+    toast.error(err.message || "Failed to save role")
   }
 }
 </script>
@@ -129,9 +133,6 @@ const handleSubmit = async (e: Event) => {
       </div>
 
       <DialogFooter class="pt-4 border-t border-slate-800 mt-auto">
-        <Button type="button" variant="outline" @click="isOpen = false" class="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100">
-          Cancel
-        </Button>
         <Button type="submit" form="role-form" :disabled="isSubmitting" class="bg-indigo-600 hover:bg-indigo-700 text-white">
           <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
           {{ isEdit ? 'Save Changes' : 'Create Role' }}

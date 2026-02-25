@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 export function UserDialog({ user, children, roles }: { user?: any, children: React.ReactNode, roles: any[] }) {
   const { createUser, updateUser } = useStore()
@@ -30,8 +31,10 @@ export function UserDialog({ user, children, roles }: { user?: any, children: Re
       
       if (isEdit) {
         await updateUser(user.id, submitData)
+        toast.success("User updated successfully")
       } else {
         await createUser(submitData)
+        toast.success("User created successfully")
       }
       setIsOpen(false)
       if (!isEdit) {
@@ -39,6 +42,7 @@ export function UserDialog({ user, children, roles }: { user?: any, children: Re
       }
     } catch (err) {
       console.error(err)
+      toast.error("Failed to save user")
     } finally {
       setIsSubmitting(false)
     }
@@ -113,9 +117,6 @@ export function UserDialog({ user, children, roles }: { user?: any, children: Re
         </form>
 
         <DialogFooter className="pt-4 border-t border-slate-800">
-          <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100">
-            Cancel
-          </Button>
           <Button type="submit" form="user-form" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {isEdit ? 'Save Changes' : 'Create User'}

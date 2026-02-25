@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select'
 import { Loader2 } from 'lucide-vue-next'
 import { useUpdateVehicle } from '@/composables/useApi'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{
   vehicle: any
@@ -82,9 +83,11 @@ const handleSubmit = async (e: Event) => {
   e.preventDefault()
   try {
     await updateVehicle({ id: props.vehicle.id, data: { ...formData.value } })
+    toast.success("Vehicle updated successfully")
     isOpen.value = false
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
+    toast.error(err.message || "Failed to update vehicle")
   }
 }
 </script>
@@ -166,9 +169,6 @@ const handleSubmit = async (e: Event) => {
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" @click="isOpen = false" class="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100">
-            Cancel
-          </Button>
           <Button type="submit" :disabled="isSubmitting" class="bg-blue-600 hover:bg-blue-700 text-white">
             <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
             Save Changes

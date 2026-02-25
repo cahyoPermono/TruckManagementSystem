@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CirclePlus, Loader2, GaugeCircle, History } from "lucide-react"
+import { toast } from "sonner"
 import { motion } from "framer-motion"
 
 export default function Tires() {
@@ -40,12 +41,14 @@ export default function Tires() {
     setIsSubmitting(true)
     try {
       await createTire({ id, serialNo, brand, size, provisioningDate: new Date().toISOString() })
+      toast.success('Tire registered successfully')
       setIsAddOpen(false)
       setId('')
       setSerialNo('')
       setBrand('')
       setSize('')
-    } catch (err) {
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to register tire')
       console.error(err)
     } finally {
       setIsSubmitting(false)
@@ -57,12 +60,14 @@ export default function Tires() {
     setIsSubmitting(true)
     try {
       await updateTireStatus(selectedTire.id, newStatus, vehicleId || undefined, unitMileage ? Number(unitMileage) : undefined)
+      toast.success('Tire status updated successfully')
       setIsUpdateOpen(false)
       setSelectedTire(null)
       setNewStatus('')
       setVehicleId('')
       setUnitMileage('')
-    } catch (err) {
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update tire status')
       console.error(err)
     } finally {
       setIsSubmitting(false)

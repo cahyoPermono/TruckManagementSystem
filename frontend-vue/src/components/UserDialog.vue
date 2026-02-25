@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select'
 import { Loader2 } from 'lucide-vue-next'
 import { useCreateUser, useUpdateUser } from '@/composables/useApi'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{
   user?: any
@@ -68,13 +69,16 @@ const handleSubmit = async (e: Event) => {
     
     if (isEdit.value) {
       await updateUser({ id: props.user.id, data: submitData })
+      toast.success("User updated successfully")
     } else {
       await createUser(submitData)
+      toast.success("User created successfully")
       formData.value = { name: '', username: '', password: '', roleId: '' }
     }
     isOpen.value = false
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
+    toast.error(err.message || "Failed to save user")
   }
 }
 </script>
@@ -142,9 +146,6 @@ const handleSubmit = async (e: Event) => {
       </form>
 
       <DialogFooter class="pt-4 border-t border-slate-800">
-        <Button type="button" variant="outline" @click="isOpen = false" class="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100">
-          Cancel
-        </Button>
         <Button type="submit" form="user-form" :disabled="isSubmitting" class="bg-indigo-600 hover:bg-indigo-700 text-white">
           <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
           {{ isEdit ? 'Save Changes' : 'Create User' }}

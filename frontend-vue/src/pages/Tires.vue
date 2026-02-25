@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CirclePlus, Loader2, GaugeCircle, History } from 'lucide-vue-next'
 import { useTires, useVehicles, useCreateTire, useUpdateTireStatus } from '@/composables/useApi'
+import { toast } from 'vue-sonner'
 
 const { data: tiresData, isLoading } = useTires()
 const { data: vehiclesData } = useVehicles()
@@ -46,12 +47,14 @@ const handleCreate = async (e: Event) => {
       size: size.value, 
       provisioningDate: new Date().toISOString() 
     })
+    toast.success('Tire registered successfully')
     isAddOpen.value = false
     id.value = ''
     serialNo.value = ''
     brand.value = ''
     size.value = ''
-  } catch (err) {
+  } catch (err: any) {
+    toast.error(err.message || 'Failed to register tire')
     console.error(err)
   }
 }
@@ -65,12 +68,14 @@ const handleUpdateStatus = async (e: Event) => {
       vehicleId: vehicleId.value || undefined,
       unitMileage: unitMileage.value ? Number(unitMileage.value) : undefined
     })
+    toast.success('Tire status updated successfully')
     isUpdateOpen.value = false
     selectedTire.value = null
     newStatus.value = ''
     vehicleId.value = ''
     unitMileage.value = ''
-  } catch (err) {
+  } catch (err: any) {
+    toast.error(err.message || 'Failed to update tire status')
     console.error(err)
   }
 }

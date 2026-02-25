@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Shield, Edit, Trash2 } from 'lucide-vue-next'
+import { Shield, Edit, Trash2, Plus } from 'lucide-vue-next'
 import RoleDialog from '@/components/RoleDialog.vue'
 import { useRoles, usePermissions, useDeleteRole } from '@/composables/useApi'
 import {
@@ -57,7 +57,7 @@ const deleteRole = async (role: any) => {
       </div>
       <RoleDialog :permissions="permissions || []">
         <Button class="bg-indigo-500 hover:bg-indigo-600">
-          <plus class="w-4 h-4 mr-2" />
+          <Plus class="w-4 h-4 mr-2" />
           Create Role
         </Button>
       </RoleDialog>
@@ -111,7 +111,7 @@ const deleteRole = async (role: any) => {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel class="bg-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700">Cancel</AlertDialogCancel>
+                      <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
                       <AlertDialogAction @click="deleteRole(role)" class="bg-red-600 text-white hover:bg-red-700">
                         Delete
                       </AlertDialogAction>
