@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 interface Stats {
   heads: number
@@ -76,7 +77,34 @@ interface AppState {
   isLoading: boolean
 }
 
+interface AuthState {
+  token: string | null
+  user: any | null
+  setAuth: (token: string, user: any) => void
+  logout: () => void
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      token: null,
+      user: null,
+      setAuth: (token, user) => set({ token, user }),
+      logout: () => set({ token: null, user: null }),
+    }),
+    {
+      name: 'tms-auth',
+    }
+  )
+)
+
 const API_BASE = 'http://localhost:4000/api'
+
+// Helper to get auth headers
+const getAuthHeaders = (): Record<string, string> => {
+  const token = useAuthStore.getState().token
+  return token ? { 'Authorization': `Bearer ${token}` } : {}
+}
 
 export const useStore = create<AppState>((set) => ({
   stats: null,
@@ -89,7 +117,7 @@ export const useStore = create<AppState>((set) => ({
   fetchStats: async () => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/dashboard/statistics`)
+      const res = await fetch(`${API_BASE}/dashboard/statistics`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ stats: data })
     } catch (e) {
@@ -101,7 +129,7 @@ export const useStore = create<AppState>((set) => ({
 
   fetchLogs: async () => {
     try {
-      const res = await fetch(`${API_BASE}/dashboard/mobility-logs`)
+      const res = await fetch(`${API_BASE}/dashboard/mobility-logs`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ logs: data })
     } catch (e) {
@@ -112,7 +140,7 @@ export const useStore = create<AppState>((set) => ({
   fetchVehicles: async () => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/vehicles`)
+      const res = await fetch(`${API_BASE}/vehicles`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ vehicles: data })
     } catch (e) {
@@ -127,7 +155,8 @@ export const useStore = create<AppState>((set) => ({
       const res = await fetch(`${API_BASE}/vehicles`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
         },
         body: JSON.stringify(data)
       })
@@ -143,7 +172,7 @@ export const useStore = create<AppState>((set) => ({
   fetchTrails: async () => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/trails`)
+      const res = await fetch(`${API_BASE}/trails`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ trails: data })
     } catch (e) {
@@ -157,7 +186,7 @@ export const useStore = create<AppState>((set) => ({
     try {
       const res = await fetch(`${API_BASE}/trails`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(data)
       })
       if (!res.ok) throw new Error('Failed to create trail setup')
@@ -170,7 +199,7 @@ export const useStore = create<AppState>((set) => ({
 
   deleteTrail: async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/trails/${id}`, { method: 'DELETE' })
+      const res = await fetch(`${API_BASE}/trails/${id}`, { method: 'DELETE', headers: getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to delete trail')
       useStore.getState().fetchTrails()
     } catch (e) {
@@ -182,7 +211,7 @@ export const useStore = create<AppState>((set) => ({
   fetchTires: async () => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/tires`)
+      const res = await fetch(`${API_BASE}/tires`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ tires: data })
     } catch (e) {
@@ -196,7 +225,7 @@ export const useStore = create<AppState>((set) => ({
     try {
       const res = await fetch(`${API_BASE}/tires`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(data)
       })
       if (!res.ok) throw new Error('Failed to create tire')
@@ -211,7 +240,7 @@ export const useStore = create<AppState>((set) => ({
     try {
       const res = await fetch(`${API_BASE}/tires/${id}/status`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ status, vehicleId, unitMileage })
       })
       if (!res.ok) throw new Error('Failed to update tire status')

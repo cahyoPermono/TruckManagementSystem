@@ -1,17 +1,28 @@
 import type { FC, ReactNode } from "react"
-import { LayoutDashboard, Truck, Settings, Menu, Bell, CircleUser, MapPin } from "lucide-react"
-import { Link, useLocation } from "react-router-dom"
+import { LayoutDashboard, Truck, Settings, Menu, Bell, CircleUser, MapPin, LogOut, Shield } from "lucide-react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
+import { useAuthStore } from '../store'
 
 const NAV_ITEMS = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Vehicles", href: "/vehicles", icon: Truck },
   { name: "Trail Setups", href: "/trails", icon: MapPin },
   { name: "Tires Master", href: "/tires", icon: Settings },
+  { name: "IAM & Roles", href: "/iam/roles", icon: Shield },
+  { name: "Users", href: "/iam/users", icon: CircleUser },
 ]
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const logout = useAuthStore((state) => state.logout)
+  const user = useAuthStore((state) => state.user)
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-slate-950 text-slate-50 font-sans selection:bg-blue-600/30">
@@ -51,17 +62,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-800/60">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-900/80 border border-slate-700/50 shadow-sm cursor-pointer hover:bg-slate-800 transition-colors">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xs font-bold shadow-inner">
-              AD
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-slate-200">Admin User</span>
-              <span className="text-xs text-slate-500">Fleet Operations</span>
-            </div>
-          </div>
-        </div>
+        {/* Removed old user profile section from sidebar */}
       </aside>
 
       {/* Main Content */}
@@ -83,9 +84,24 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
               <Bell className="h-5 w-5" />
               <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-500 ring-2 ring-slate-950 animate-pulse" />
             </button>
-            <button className="p-2 text-slate-400 hover:text-white transition-colors rounded-full hover:bg-slate-800">
-              <CircleUser className="h-5 w-5" />
-            </button>
+            
+            {/* User Profile */}
+            <div className="flex items-center gap-4 pl-4 border-l border-slate-800">
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-sm font-medium text-slate-200">{user?.name || 'Administrator'}</span>
+                <span className="text-xs text-slate-500">{user?.roleId ? 'Admin role' : 'Super Admin'}</span>
+              </div>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
+                {user?.name?.charAt(0) || 'A'}
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="ml-2 p-2 rounded-full hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition-colors"
+                title="Log out"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </header>
 

@@ -108,3 +108,45 @@ model MobilityLog {
   distance        Float       @default(0) // Distance covered in this log segment
   timestamp       DateTime    @default(now())
 }
+
+// ==========================================
+// IAM & ROLE-BASED ACCESS CONTROL (RBAC)
+// ==========================================
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  username     String   @unique
+  passwordHash String
+  roleId       String?
+  role         Role?    @relation(fields: [roleId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  users       User[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  name        String           @unique // e.g., "manage:vehicles", "view:dashboard"
+  module      String           // e.g., "Vehicles", "Trails", "Tires", "Dashboard", "IAM"
+  roles       RolePermission[]
+  createdAt   DateTime         @default(now())
+}
+
+model RolePermission {
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}

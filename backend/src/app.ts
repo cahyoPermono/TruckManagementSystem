@@ -6,6 +6,9 @@ import vehicleRoutes from './modules/vehicles/routes'
 import trailRoutes from './modules/trails/routes'
 import tireRoutes from './modules/tires/routes'
 import dashboardRoutes from './modules/dashboard/routes'
+import authPlugin from './plugins/auth'
+import authRoutes from './modules/auth/routes'
+import iamRoutes from './modules/iam/routes'
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
@@ -20,12 +23,15 @@ export async function buildApp(): Promise<FastifyInstance> {
   })
   
   await app.register(prismaPlugin)
+  await app.register(authPlugin)
 
   // Register domain modules (routes)
   app.get('/health', async () => {
     return { status: 'ok', timestamp: new Date().toISOString() }
   })
 
+  await app.register(authRoutes, { prefix: '/api/auth' })
+  await app.register(iamRoutes, { prefix: '/api/iam' })
   await app.register(vehicleRoutes, { prefix: '/api/vehicles' })
   await app.register(trailRoutes, { prefix: '/api/trails' })
   await app.register(tireRoutes, { prefix: '/api/tires' })

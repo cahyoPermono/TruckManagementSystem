@@ -51,7 +51,7 @@ export class TireController {
   setStatus = async (request: FastifyRequest<{ Params: { id: string }, Body: any }>, reply: FastifyReply) => {
     try {
       const { id } = request.params
-      const { status, vehicleId, unitMileage } = request.body
+      const { status, vehicleId, unitMileage } = request.body as any
       const newStatus = status as TireStatus
 
       const tire = await this.tireService.setStatus(id, newStatus, vehicleId, unitMileage)

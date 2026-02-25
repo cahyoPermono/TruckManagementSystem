@@ -1,0 +1,106 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Plus, Search, Shield, UserCog, Trash2, Edit } from 'lucide-vue-next'
+import { useAuthStore } from '../../stores/auth'
+
+interface User {
+  id: string
+  name: string
+  username: string
+  roleId: string | null
+  role: { name: string } | null
+  createdAt: string
+}
+
+const users = ref<User[]>([])
+const loading = ref(true)
+const authStore = useAuthStore()
+
+const fetchUsers = async () => {
+  loading.value = true
+  try {
+    const res = await fetch('http://localhost:4000/api/iam/users', {
+      headers: authStore.getAuthHeaders()
+    })
+    if (res.ok) {
+      users.value = await res.json()
+    }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchUsers()
+})
+</script>
+
+<template>
+  <div class="space-y-6 animate-in fade-in duration-500">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight">User Management</h2>
+        <p class="text-slate-400">View and manage system users and their assigned roles.</p>
+      </div>
+      <Button class="bg-indigo-500 hover:bg-indigo-600">
+        <Plus class="w-4 h-4 mr-2" />
+        Add User
+      </Button>
+    </div>
+
+    <Card class="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
+      <CardHeader class="border-b border-slate-800 flex flex-row items-center justify-between">
+        <CardTitle class="text-lg">System Users</CardTitle>
+        <div class="relative w-64">
+          <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
+          <Input
+            placeholder="Search users..."
+            class="pl-9 bg-slate-950/50 border-slate-800 text-sm focus-visible:ring-indigo-500"
+          />
+        </div>
+      </CardHeader>
+      <CardContent class="p-0">
+        <div v-if="loading" class="p-8 text-center text-slate-400">Loading users...</div>
+        <div v-else class="divide-y divide-slate-800">
+          <div v-for="user in users" :key="user.id" class="flex items-center justify-between p-4 hover:bg-slate-800/30 transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700">
+                <UserCog class="w-5 h-5 text-slate-400" />
+              </div>
+              <div>
+                <p class="font-medium text-slate-200">{{ user.name }}</p>
+                <p class="text-sm text-slate-500">@{{ user.username }}</p>
+              </div>
+            </div>
+            
+            <div class="flex flex-1 items-center justify-center">
+              <Badge v-if="user.role" variant="outline" class="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+                <Shield class="w-3 h-3 mr-1" />
+                {{ user.role.name }}
+              </Badge>
+              <Badge v-else variant="outline" class="bg-slate-800 text-slate-400 border-slate-700">
+                No Role
+              </Badge>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <Button variant="ghost" size="icon" class="text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
+                <Edit class="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="icon" class="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                <Trash2 class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div v-if="users.length === 0" class="p-8 text-center text-slate-400">No users found.</div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+</template>
