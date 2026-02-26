@@ -16,7 +16,9 @@ async function main() {
     { name: 'manage:tires', module: 'Tires' },
     { name: 'view:tires', module: 'Tires' },
     { name: 'view:dashboard', module: 'Dashboard' },
+    { name: 'manage:dashboard', module: 'Dashboard' },
     { name: 'manage:iam', module: 'IAM' }, // Manage users, roles, permissions
+    { name: 'view:iam', module: 'IAM' },
   ]
 
   const createdPermissions = []
@@ -40,7 +42,8 @@ async function main() {
   })
 
   // Assign all permissions to Admin
-  for (const p of createdPermissions) {
+  const allPermissions = await prisma.permission.findMany()
+  for (const p of allPermissions) {
     await prisma.rolePermission.upsert({
       where: { roleId_permissionId: { roleId: adminRole.id, permissionId: p.id } },
       update: {},
