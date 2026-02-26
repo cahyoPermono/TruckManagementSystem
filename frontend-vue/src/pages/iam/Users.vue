@@ -34,6 +34,8 @@ import { toast } from 'vue-sonner'
 const authStore = useAuthStore()
 const queryClient = useQueryClient()
 
+const canManage = computed(() => authStore.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:iam'))
+
 const { data: rolesData } = useRoles()
 const roles = computed(() => rolesData.value || [])
 
@@ -83,7 +85,7 @@ const deleteUser = async (user: User) => {
         <h2 class="text-2xl font-bold tracking-tight">User Management</h2>
         <p class="text-slate-400">View and manage system users and their assigned roles.</p>
       </div>
-      <UserDialog :roles="roles">
+      <UserDialog v-if="canManage" :roles="roles">
         <Button class="bg-indigo-500 hover:bg-indigo-600">
           <Plus class="w-4 h-4 mr-2" />
           Add User
@@ -127,12 +129,12 @@ const deleteUser = async (user: User) => {
             </div>
             
             <div class="flex items-center gap-2">
-              <UserDialog :user="user" :roles="roles">
+              <UserDialog v-if="canManage" :user="user" :roles="roles">
                 <Button variant="ghost" size="icon" class="text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
                   <Edit class="w-4 h-4" />
                 </Button>
               </UserDialog>
-              <AlertDialog>
+              <AlertDialog v-if="canManage">
                 <AlertDialogTrigger as-child>
                   <Button variant="ghost" size="icon" class="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
                     <Trash2 class="w-4 h-4" />

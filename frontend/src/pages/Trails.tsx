@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useStore } from "../store"
+import { useStore, useAuthStore } from "../store"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -75,6 +75,8 @@ export const TruckSimulation = ({ type, hasHead, hasT1, hasT2 }: { type: string,
 
 export default function Trails() {
   const { trails, fetchTrails, vehicles, fetchVehicles, createTrail, deleteTrail, isLoading } = useStore()
+  const { user } = useAuthStore()
+  const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:trails')
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [viewType, setViewType] = useState<'table' | 'card'>('card')
   
@@ -159,6 +161,7 @@ export default function Trails() {
               <LayoutGrid className="h-4 w-4" />
             </Button>
           </div>
+          {canManage && (
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-900/20">
@@ -273,6 +276,7 @@ export default function Trails() {
             </form>
           </DialogContent>
         </Dialog>
+        )}
 
       </div>
 
@@ -301,6 +305,7 @@ export default function Trails() {
             </Badge>
           </div>
           
+          {canManage && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-300 hover:bg-red-400/10">
@@ -321,6 +326,7 @@ export default function Trails() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          )}
         </CardHeader>
                 <CardContent className="pt-4 flex-1 flex flex-col gap-4">
                   
@@ -508,6 +514,7 @@ export default function Trails() {
                 {t.totalWheels}
               </TableCell>
               <TableCell className="text-right">
+                {canManage && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-300 hover:bg-red-400/10">
@@ -527,6 +534,7 @@ export default function Trails() {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+                )}
               </TableCell>
             </TableRow>
                 ))

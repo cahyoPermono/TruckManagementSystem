@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useStore } from "../store"
+import { useStore, useAuthStore } from "../store"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -14,6 +14,8 @@ import { motion } from "framer-motion"
 
 export default function Tires() {
   const { tires, fetchTires, createTire, updateTireStatus, vehicles, fetchVehicles, isLoading } = useStore()
+  const { user } = useAuthStore()
+  const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:tires')
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [selectedTire, setSelectedTire] = useState<any>(null)
@@ -95,6 +97,7 @@ export default function Tires() {
           <p className="text-slate-400 mt-1">Manage tire assets, status, and assignment.</p>
         </div>
         
+        {canManage && (
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
             <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-900/20">
@@ -151,6 +154,7 @@ export default function Tires() {
             </form>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       <Dialog open={isUpdateOpen} onOpenChange={setIsUpdateOpen}>
@@ -290,9 +294,11 @@ export default function Tires() {
                       ) : <span className="text-slate-600">-</span>}
                     </TableCell>
                     <TableCell className="text-right">
+                       {canManage && (
                        <Button variant="ghost" size="sm" onClick={() => openUpdateModal(t)} className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
                          <History className="h-4 w-4 mr-2" /> Log Action
                        </Button>
+                       )}
                     </TableCell>
                   </TableRow>
                 ))

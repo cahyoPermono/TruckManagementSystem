@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Plus, Shield, Edit, Trash2 } from 'lucide-react'
-import { useStore } from '../../store'
+import { useStore, useAuthStore } from '../../store'
 import { RoleDialog } from '@/components/RoleDialog'
 import {
   AlertDialog,
@@ -23,6 +23,8 @@ import { motion } from "framer-motion"
 
 export function Roles() {
   const { roles, permissions, fetchRoles, fetchPermissions, deleteRole } = useStore()
+  const { user } = useAuthStore()
+  const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:iam')
   const [loading, setLoading] = useState(true)
 
   const fetchData = async () => {
@@ -53,12 +55,14 @@ export function Roles() {
           <h2 className="text-2xl font-bold tracking-tight">Roles & Permissions</h2>
           <p className="text-slate-400">Manage security roles and map permissions to access levels.</p>
         </div>
+        {canManage && (
         <RoleDialog permissions={permissions}>
           <Button className="bg-indigo-500 hover:bg-indigo-600">
             <Plus className="w-4 h-4 mr-2" />
             Create Role
           </Button>
         </RoleDialog>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -88,11 +92,14 @@ export function Roles() {
                   </div>
 
                   <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
+                    {canManage && (
                     <RoleDialog role={role} permissions={permissions}>
                       <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
                         <Edit className="w-3 h-3" />
                       </Button>
                     </RoleDialog>
+                    )}
+                    {canManage && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
@@ -120,6 +127,7 @@ export function Roles() {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
+                    )}
                   </div>
                 </CardContent>
               </Card>

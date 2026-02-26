@@ -29,6 +29,26 @@ router.beforeEach((to, _from) => {
   } else if (to.path === '/login' && auth.token) {
     return '/dashboard'
   }
+
+  if (to.meta.requiresAuth && auth.user && auth.user.role && auth.user.role.permissions) {
+    let requiredPermission: string | null = null
+    if (to.path.startsWith('/vehicles')) requiredPermission = 'view:vehicles'
+    else if (to.path.startsWith('/trails')) requiredPermission = 'view:trails'
+    else if (to.path.startsWith('/tires')) requiredPermission = 'view:tires'
+    else if (to.path.startsWith('/iam')) requiredPermission = 'view:iam'
+    else if (to.path.startsWith('/dashboard')) requiredPermission = 'view:dashboard'
+
+    if (requiredPermission) {
+      const hasPerm = auth.user.role.permissions.some((p: any) => p.permission.name === requiredPermission)
+      if (!hasPerm) {
+        if (to.path === '/dashboard') {
+          return false // Cancel navigation or we could redirect to a distinct forbidden page
+        }
+        return '/dashboard'
+      }
+    }
+  }
+
   return true
 })
 

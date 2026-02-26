@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useStore } from "../store"
+import { useStore, useAuthStore } from "../store"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +18,8 @@ import { motion } from "framer-motion"
 
 export default function Vehicles() {
   const { vehicles, fetchVehicles, isLoading, createVehicle } = useStore()
+  const { user } = useAuthStore()
+  const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:vehicles')
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [viewType, setViewType] = useState<'table' | 'card'>('card')
   const [formData, setFormData] = useState({ id: '', kind: 'THEAD', brand: '', model: '', modelYear: '', plateNo: '', frameNo: '', nbWheels: '10', imageUrl: '' })
@@ -80,6 +82,7 @@ export default function Vehicles() {
               <LayoutGrid className="h-4 w-4" />
             </Button>
           </div>
+          {canManage && (
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
               <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20">
@@ -239,6 +242,7 @@ export default function Vehicles() {
             </form>
           </DialogContent>
         </Dialog>
+        )}
 
         </div>
       </div>
@@ -317,11 +321,13 @@ export default function Vehicles() {
                              View Tires
                            </Button>
                         </VehicleTiresDialog>
+                        {canManage && (
                         <VehicleEditDialog vehicle={v}>
                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
                              Edit
                            </Button>
                         </VehicleEditDialog>
+                        )}
                       </div>
                     </div>
                     <div className="flex justify-between text-sm items-center pt-2 border-t border-slate-800/60">
@@ -407,11 +413,13 @@ export default function Vehicles() {
                              <MapPin className="h-3 w-3" />
                            </Button>
                         </VehicleMobilityDialog>
+                        {canManage && (
                         <VehicleEditDialog vehicle={v}>
                            <Button variant="ghost" size="icon" className="h-6 w-6 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300" title="Edit Vehicle">
                              <Edit className="h-3 w-3" />
                            </Button>
                         </VehicleEditDialog>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>

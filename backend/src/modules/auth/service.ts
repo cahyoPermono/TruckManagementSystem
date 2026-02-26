@@ -3,7 +3,18 @@ import bcrypt from 'bcrypt'
 
 export const AuthService = (prisma: PrismaClient) => ({
   async login(username: string, passwordPlain: string) {
-    const user = await prisma.user.findUnique({ where: { username } })
+    const user = await prisma.user.findUnique({ 
+      where: { username },
+      include: {
+        role: {
+          include: {
+            permissions: {
+              include: { permission: true }
+            }
+          }
+        }
+      }
+    })
     if (!user) {
       throw new Error('Invalid credentials')
     }
@@ -17,7 +28,8 @@ export const AuthService = (prisma: PrismaClient) => ({
       id: user.id,
       username: user.username,
       name: user.name,
-      roleId: user.roleId
+      roleId: user.roleId,
+      role: user.role
     }
   },
 

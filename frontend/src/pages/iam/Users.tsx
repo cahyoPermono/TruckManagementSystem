@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Search, Shield, UserCog, Trash2, Edit } from 'lucide-react'
-import { useStore } from '../../store'
+import { useStore, useAuthStore } from '../../store'
 import { UserDialog } from '@/components/UserDialog'
 import {
   AlertDialog,
@@ -22,6 +22,8 @@ import { motion } from "framer-motion"
 
 export function Users() {
   const { users, roles, fetchUsers, fetchRoles, deleteUser } = useStore()
+  const { user } = useAuthStore()
+  const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:iam')
   const [loading, setLoading] = useState(true)
 
   const fetchData = async () => {
@@ -52,12 +54,14 @@ export function Users() {
           <h2 className="text-2xl font-bold tracking-tight">User Management</h2>
           <p className="text-slate-400">View and manage system users and their assigned roles.</p>
         </div>
+        {canManage && (
         <UserDialog roles={roles}>
           <Button className="bg-indigo-500 hover:bg-indigo-600">
             <Plus className="w-4 h-4 mr-2" />
             Add User
           </Button>
         </UserDialog>
+        )}
       </div>
 
       <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
@@ -102,11 +106,14 @@ export function Users() {
                   </div>
                   
                   <div className="flex items-center gap-2">
+                    {canManage && (
                     <UserDialog user={user} roles={roles}>
                       <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
                         <Edit className="w-4 h-4" />
                       </Button>
                     </UserDialog>
+                    )}
+                    {canManage && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-400 hover:bg-red-500/10">
@@ -134,6 +141,7 @@ export function Users() {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
+                    )}
                   </div>
                 </div>
               ))}

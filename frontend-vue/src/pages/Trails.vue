@@ -25,6 +25,7 @@ import TruckSimulation from '@/components/TruckSimulation.vue'
 import VehicleTiresDialog from '@/components/VehicleTiresDialog.vue'
 import VehicleMobilityDialog from '@/components/VehicleMobilityDialog.vue'
 import { toast } from 'vue-sonner'
+import { useAuthStore } from '@/stores/auth'
 
 const { data: trailsData, isLoading } = useTrails()
 const { data: vehiclesData } = useVehicles()
@@ -33,6 +34,9 @@ const { mutateAsync: deleteTrail } = useDeleteTrail()
 
 const trails = computed(() => trailsData.value || [])
 const vehicles = computed(() => vehiclesData.value || [])
+
+const auth = useAuthStore()
+const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:trails'))
 
 const isAddOpen = ref(false)
 const viewType = ref<'table' | 'card'>('card')
@@ -103,7 +107,7 @@ const handleDelete = async (trailId: string) => {
           </Button>
         </div>
         
-        <Dialog v-model:open="isAddOpen">
+        <Dialog v-if="canManage" v-model:open="isAddOpen">
           <DialogTrigger asChild>
             <Button class="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-900/20">
               <LinkIcon class="mr-2 h-4 w-4" /> Create Setup
@@ -213,7 +217,7 @@ const handleDelete = async (trailId: string) => {
             </Badge>
           </div>
           
-          <AlertDialog>
+          <AlertDialog v-if="canManage">
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" class="text-red-400 hover:text-red-300 hover:bg-red-400/10">
                 <Trash2 class="h-4 w-4" />
@@ -384,7 +388,7 @@ const handleDelete = async (trailId: string) => {
                 {{ t.totalWheels }}
               </TableCell>
               <TableCell class="text-right">
-                <AlertDialog>
+                <AlertDialog v-if="canManage">
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" size="icon" class="text-red-400 hover:text-red-300 hover:bg-red-400/10">
                       <Trash2 class="h-4 w-4" />

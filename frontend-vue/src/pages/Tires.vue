@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CirclePlus, Loader2, GaugeCircle, History } from 'lucide-vue-next'
 import { useTires, useVehicles, useCreateTire, useUpdateTireStatus } from '@/composables/useApi'
 import { toast } from 'vue-sonner'
+import { useAuthStore } from '@/stores/auth'
 
 const { data: tiresData, isLoading } = useTires()
 const { data: vehiclesData } = useVehicles()
@@ -19,6 +20,9 @@ const { mutateAsync: updateTireStatus, isPending: isSubmittingUpdate } = useUpda
 
 const tires = computed(() => tiresData.value || [])
 const vehicles = computed(() => vehiclesData.value || [])
+
+const auth = useAuthStore()
+const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:tires'))
 
 const isAddOpen = ref(false)
 const isUpdateOpen = ref(false)
@@ -98,7 +102,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
         <p class="text-slate-400 mt-1">Manage tire assets, status, and assignment.</p>
       </div>
       
-      <Dialog v-model:open="isAddOpen">
+      <Dialog v-if="canManage" v-model:open="isAddOpen">
         <DialogTrigger asChild>
           <Button class="bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-900/20">
             <CirclePlus class="mr-2 h-4 w-4" /> Add Tire
@@ -264,7 +268,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                 <span v-else class="text-slate-600">-</span>
               </TableCell>
               <TableCell class="text-right">
-                 <Button variant="ghost" size="sm" @click="openUpdateModal(t)" class="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
+                 <Button v-if="canManage" variant="ghost" size="sm" @click="openUpdateModal(t)" class="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
                    <History class="h-4 w-4 mr-2" /> Log Action
                  </Button>
               </TableCell>

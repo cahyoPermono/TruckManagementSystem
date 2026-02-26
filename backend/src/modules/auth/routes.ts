@@ -12,7 +12,8 @@ export default async function (fastify: FastifyInstance) {
 
     try {
       const user = await authService.login(username, password)
-      const token = fastify.jwt.sign(user)
+      const tokenPayload = { id: user.id, username: user.username, roleId: user.roleId }
+      const token = fastify.jwt.sign(tokenPayload)
       return { token, user }
     } catch (error: any) {
       return reply.code(401).send({ error: error.message })

@@ -14,12 +14,12 @@ import { cn } from "@/lib/utils"
 import { useAuthStore } from '../store'
 
 const NAV_ITEMS = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Vehicles", href: "/vehicles", icon: Truck },
-  { name: "Trail Setups", href: "/trails", icon: MapPin },
-  { name: "Tires Master", href: "/tires", icon: Settings },
-  { name: "IAM & Roles", href: "/iam/roles", icon: Shield },
-  { name: "Users", href: "/iam/users", icon: CircleUser },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "view:dashboard" },
+  { name: "Vehicles", href: "/vehicles", icon: Truck, permission: "view:vehicles" },
+  { name: "Trail Setups", href: "/trails", icon: MapPin, permission: "view:trails" },
+  { name: "Tires Master", href: "/tires", icon: Settings, permission: "view:tires" },
+  { name: "IAM & Roles", href: "/iam/roles", icon: Shield, permission: "view:iam" },
+  { name: "Users", href: "/iam/users", icon: CircleUser, permission: "view:iam" },
 ]
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
@@ -32,6 +32,13 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
     logout()
     navigate('/login')
   }
+
+  const hasPermission = (permissionName: string) => {
+    if (!user || !user.role || !user.role.permissions) return false;
+    return user.role.permissions.some((p: any) => p.permission.name === permissionName);
+  }
+
+  const filteredNavItems = NAV_ITEMS.filter(item => hasPermission(item.permission));
 
   return (
     <div className="flex min-h-screen w-full bg-slate-950 text-slate-50 font-sans selection:bg-blue-600/30">
@@ -48,7 +55,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">
             Main Menu
           </div>
-          {NAV_ITEMS.map((item) => {
+          {filteredNavItems.map((item) => {
             const isActive = location.pathname === item.href || (item.href !== "/" && location.pathname.startsWith(item.href))
             return (
               <Link
@@ -99,7 +106,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">
                     Main Menu
                   </div>
-                  {NAV_ITEMS.map((item) => {
+                  {filteredNavItems.map((item) => {
                     const isActive = location.pathname === item.href || (item.href !== "/" && location.pathname.startsWith(item.href))
                     return (
                       <Link
@@ -124,7 +131,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
               </SheetContent>
             </Sheet>
             <h1 className="text-xl font-semibold text-slate-100 hidden sm:block">
-              {NAV_ITEMS.find((n) => n.href === location.pathname)?.name || "Dashboard Overview"}
+              {filteredNavItems.find((n) => n.href === location.pathname)?.name || "Dashboard Overview"}
             </h1>
           </div>
           <div className="flex items-center gap-4">

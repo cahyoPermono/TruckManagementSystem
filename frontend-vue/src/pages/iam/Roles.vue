@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'vue-sonner'
+import { useAuthStore } from '@/stores/auth'
 
 const { data: rolesData, isLoading: rolesLoading } = useRoles()
 const { data: permissionsData, isLoading: permsLoading } = usePermissions()
@@ -26,6 +27,9 @@ const { mutateAsync: deleteRoleApi } = useDeleteRole()
 const loading = computed(() => rolesLoading.value || permsLoading.value)
 const roles = computed(() => rolesData.value || [])
 const permissions = computed(() => permissionsData.value || [])
+
+const auth = useAuthStore()
+const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:iam'))
 
 const getModules = () => {
   if (!permissions.value) return [] as string[]
@@ -55,7 +59,7 @@ const deleteRole = async (role: any) => {
         <h2 class="text-2xl font-bold tracking-tight">Roles & Permissions</h2>
         <p class="text-slate-400">Manage security roles and map permissions to access levels.</p>
       </div>
-      <RoleDialog :permissions="permissions || []">
+      <RoleDialog v-if="canManage" :permissions="permissions || []">
         <Button class="bg-indigo-500 hover:bg-indigo-600">
           <Plus class="w-4 h-4 mr-2" />
           Create Role
@@ -92,12 +96,12 @@ const deleteRole = async (role: any) => {
               </div>
 
               <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
-                <RoleDialog :role="role" :permissions="permissions || []">
+                <RoleDialog v-if="canManage" :role="role" :permissions="permissions || []">
                   <Button variant="ghost" size="icon" class="h-6 w-6 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10">
                     <Edit class="w-3 h-3" />
                   </Button>
                 </RoleDialog>
-                <AlertDialog>
+                <AlertDialog v-if="canManage">
                   <AlertDialogTrigger as-child>
                     <Button variant="ghost" size="icon" class="h-6 w-6 text-slate-400 hover:text-red-400 hover:bg-red-500/10">
                       <Trash2 class="w-3 h-3" />

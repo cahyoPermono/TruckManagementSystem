@@ -14,9 +14,13 @@ import VehicleTiresDialog from '@/components/VehicleTiresDialog.vue'
 import VehicleMobilityDialog from '@/components/VehicleMobilityDialog.vue'
 import VehicleEditDialog from '@/components/VehicleEditDialog.vue'
 import { toast } from 'vue-sonner'
+import { useAuthStore } from '@/stores/auth'
 
 const { data, isLoading } = useVehicles()
 const { mutateAsync: createVehicle, isPending: isSubmitting } = useCreateVehicle()
+
+const auth = useAuthStore()
+const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:vehicles'))
 
 const vehicles = computed(() => data.value || [])
 const isAddOpen = ref(false)
@@ -84,7 +88,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
           </Button>
         </div>
         
-        <Dialog v-model:open="isAddOpen">
+        <Dialog v-if="canManage" v-model:open="isAddOpen">
           <DialogTrigger asChild>
             <Button class="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20">
               <PlusCircle class="mr-2 h-4 w-4" /> Add Vehicle
@@ -235,7 +239,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                      View Tires
                    </Button>
                 </VehicleTiresDialog>
-                <VehicleEditDialog :vehicle="v">
+                <VehicleEditDialog v-if="canManage" :vehicle="v">
                    <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px] text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
                      Edit
                    </Button>
@@ -319,7 +323,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                        <MapPin class="h-3 w-3" />
                      </Button>
                   </VehicleMobilityDialog>
-                  <VehicleEditDialog :vehicle="v">
+                  <VehicleEditDialog v-if="canManage" :vehicle="v">
                      <Button variant="ghost" size="icon" class="h-6 w-6 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300" title="Edit Vehicle">
                        <Edit class="h-3 w-3" />
                      </Button>

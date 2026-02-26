@@ -3,14 +3,16 @@ import { VehicleController } from './controller'
 import { VehicleService } from './service'
 
 const vehicleRoutes: FastifyPluginAsync = async (server: FastifyInstance) => {
+  server.addHook('onRequest', server.authenticate)
+
   const vehicleService = new VehicleService(server.prisma)
   const vehicleController = new VehicleController(vehicleService)
 
-  server.get('/', vehicleController.getAllVehicles)
-  server.get('/:id', vehicleController.getVehicleById)
-  server.post('/', vehicleController.createVehicle)
-  server.put('/:id', vehicleController.updateVehicle)
-  server.delete('/:id', vehicleController.deleteVehicle)
+  server.get<{ Querystring: { kind?: string } }>('/', { preHandler: server.verifyPermission('view:vehicles') }, vehicleController.getAllVehicles)
+  server.get<{ Params: { id: string } }>('/:id', { preHandler: server.verifyPermission('view:vehicles') }, vehicleController.getVehicleById)
+  server.post<{ Body: any }>('/', { preHandler: server.verifyPermission('manage:vehicles') }, vehicleController.createVehicle)
+  server.put<{ Params: { id: string }, Body: any }>('/:id', { preHandler: server.verifyPermission('manage:vehicles') }, vehicleController.updateVehicle)
+  server.delete<{ Params: { id: string } }>('/:id', { preHandler: server.verifyPermission('manage:vehicles') }, vehicleController.deleteVehicle)
 }
 
 export default vehicleRoutes

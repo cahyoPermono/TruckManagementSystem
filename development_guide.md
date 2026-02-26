@@ -77,10 +77,11 @@ export async function driverRoutes(fastify: FastifyInstance) {
   fastify.addHook('onRequest', fastify.authenticate);
 
   // Akses BACA (READ) membutuhkan izin hak 'view:drivers'
+  // Gunakan Generic Interfaces parameter route jika mendefinisikan tipe Body/Params/Query untuk menghindari error TS
   fastify.get('/', { preHandler: fastify.verifyPermission('view:drivers') }, getDrivers);
 
   // Akses TULIS (WRITE) membutuhkan hak izin 'manage:drivers'
-  fastify.post('/', { preHandler: fastify.verifyPermission('manage:drivers') }, createDriver);
+  fastify.post<{ Body: any }>('/', { preHandler: fastify.verifyPermission('manage:drivers') }, createDriver);
 }
 ```
 
@@ -145,11 +146,17 @@ export const useCreateDriver = () => {
 ```tsx
 import { useDrivers, useCreateDriver } from '@/composables/useApi';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/store';
 
 export default function Drivers() {
   const { data: drivers, isLoading } = useDrivers();
   const { mutateAsync: createDriver } = useCreateDriver();
+
+  // Ambil state auth dari user login untuk otorisasi tombol UI
+  const { user } = useAuthStore();
+  const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:drivers');
 
   const handleAdd = async () => {
     try {
@@ -162,9 +169,15 @@ export default function Drivers() {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold text-slate-50 mb-6">Database Pengemudi</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-slate-50">Database Pengemudi</h1>
+        {/* Render tombol secara kondisional jika user memiliki izin */}
+        {canManage && (
+          <Button onClick={handleAdd}>Tambah Pengemudi</Button>
+        )}
+      </div>
       <Card className="bg-slate-900/60 border-slate-800">
-         {/* Sisipkan dan render Tabel / Tombol Anda Di Sini */}
+         {/* Sisipkan dan render Tabel Anda Di Sini */}
       </Card>
     </div>
   );
@@ -181,7 +194,8 @@ import { UserSquare2 } from 'lucide-react'; // Pilih Icon yang tepat
 
 const NAV_ITEMS = [
   // ... item menu lain yang sebelumnya sudah ada
-  { name: "Pengemudi (Drivers)", href: "/drivers", icon: UserSquare2 },
+  // Sertakan 'permission' flag agar layout menyembunyikan menu ini jika user tidak memiliki izin!
+  { name: "Pengemudi (Drivers)", href: "/drivers", icon: UserSquare2, permission: "view:drivers" },
 ];
 ```
 
