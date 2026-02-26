@@ -45,7 +45,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* Sidebar - Hidden on Mobile */}
       <aside className="sticky top-0 h-screen w-64 border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl hidden md:flex flex-col transition-all duration-300 z-40">
         <div className="h-16 flex items-center px-6 border-b border-slate-800/60">
-          <Truck className="h-6 w-6 text-blue-500 mr-3" />
+          <img src="/logo.svg" className="h-8 w-auto mr-3 drop-shadow-md" alt="TMS Logo" />
           <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
             TMS Portal
           </span>
@@ -97,7 +97,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
               <SheetContent side="left" className="w-72 bg-slate-900 border-r border-slate-800 p-0 text-slate-50">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="h-16 flex items-center px-6 border-b border-slate-800/60">
-                  <Truck className="h-6 w-6 text-blue-500 mr-3" />
+                  <img src="/logo.svg" className="h-8 w-auto mr-3 drop-shadow-md" alt="TMS Logo" />
                   <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
                     TMS Portal
                   </span>

@@ -60,7 +60,7 @@ const isActive = (href: string) => {
     <!-- Sidebar - Hidden on Mobile -->
     <aside class="sticky top-0 h-screen w-64 border-r border-slate-800 bg-slate-900/50 backdrop-blur-xl hidden md:flex flex-col transition-all duration-300 z-40">
       <div class="h-16 flex items-center px-6 border-b border-slate-800/60">
-        <Truck class="h-6 w-6 text-blue-500 mr-3" />
+        <img src="/logo.svg" class="h-8 w-auto mr-3 drop-shadow-md" alt="TMS Logo" />
         <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
           TMS Portal
         </span>
@@ -104,7 +104,7 @@ const isActive = (href: string) => {
             </SheetTrigger>
             <SheetContent side="left" class="w-72 bg-slate-900 border-r border-slate-800 p-0 text-slate-50">
               <div class="h-16 flex items-center px-6 border-b border-slate-800/60">
-                <Truck class="h-6 w-6 text-blue-500 mr-3" />
+                <img src="/logo.svg" class="h-8 w-auto mr-3 drop-shadow-md" alt="TMS Logo" />
                 <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
                   TMS Portal
                 </span>
