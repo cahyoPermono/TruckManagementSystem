@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { customFetch } from '@/lib/fetchInterceptor'
 
 interface Stats {
   heads: number
@@ -152,7 +153,7 @@ export const useStore = create<AppState>((set) => ({
   fetchStats: async () => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/dashboard/statistics`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/dashboard/statistics`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ stats: data })
     } catch (e) {
@@ -164,7 +165,7 @@ export const useStore = create<AppState>((set) => ({
 
   fetchLogs: async () => {
     try {
-      const res = await fetch(`${API_BASE}/dashboard/mobility-logs`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/dashboard/mobility-logs`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ logs: data })
     } catch (e) {
@@ -174,7 +175,7 @@ export const useStore = create<AppState>((set) => ({
 
   fetchRoles: async (page = 1, limit = 10) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/roles?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/iam/roles?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ roles: data.data || data, rolesMeta: data.meta || null })
     } catch (e) {
@@ -184,7 +185,7 @@ export const useStore = create<AppState>((set) => ({
 
   createRole: async (data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/roles`, {
+      const res = await customFetch(`${API_BASE}/iam/roles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ export const useStore = create<AppState>((set) => ({
 
   updateRole: async (id: string, data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/roles/${id}`, {
+      const res = await customFetch(`${API_BASE}/iam/roles/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -220,7 +221,7 @@ export const useStore = create<AppState>((set) => ({
 
   deleteRole: async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/roles/${id}`, {
+      const res = await customFetch(`${API_BASE}/iam/roles/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })
@@ -234,7 +235,7 @@ export const useStore = create<AppState>((set) => ({
 
   fetchPermissions: async () => {
     try {
-      const res = await fetch(`${API_BASE}/iam/permissions`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/iam/permissions`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ permissions: data })
     } catch (e) {
@@ -244,7 +245,7 @@ export const useStore = create<AppState>((set) => ({
 
   fetchUsers: async (page = 1, limit = 10) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/users?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/iam/users?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ users: data.data || data, usersMeta: data.meta || null })
     } catch (e) {
@@ -254,7 +255,7 @@ export const useStore = create<AppState>((set) => ({
 
   createUser: async (data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/users`, {
+      const res = await customFetch(`${API_BASE}/iam/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -272,7 +273,7 @@ export const useStore = create<AppState>((set) => ({
 
   updateUser: async (id: string, data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/users/${id}`, {
+      const res = await customFetch(`${API_BASE}/iam/users/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -290,7 +291,7 @@ export const useStore = create<AppState>((set) => ({
 
   deleteUser: async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/users/${id}`, {
+      const res = await customFetch(`${API_BASE}/iam/users/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })
@@ -305,7 +306,7 @@ export const useStore = create<AppState>((set) => ({
   fetchVehicles: async (page = 1, limit = 10) => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/vehicles?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/vehicles?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ vehicles: data.data || data, vehiclesMeta: data.meta || null })
     } catch (e) {
@@ -317,7 +318,7 @@ export const useStore = create<AppState>((set) => ({
 
   createVehicle: async (data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/vehicles`, {
+      const res = await customFetch(`${API_BASE}/vehicles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -336,7 +337,7 @@ export const useStore = create<AppState>((set) => ({
 
   updateVehicle: async (id: string, data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/vehicles/${id}`, {
+      const res = await customFetch(`${API_BASE}/vehicles/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -354,7 +355,7 @@ export const useStore = create<AppState>((set) => ({
 
   deleteVehicle: async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/vehicles/${id}`, {
+      const res = await customFetch(`${API_BASE}/vehicles/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })
@@ -369,7 +370,7 @@ export const useStore = create<AppState>((set) => ({
   fetchTrails: async (page = 1, limit = 10) => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/trails?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/trails?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ trails: data.data || data, trailsMeta: data.meta || null })
     } catch (e) {
@@ -381,7 +382,7 @@ export const useStore = create<AppState>((set) => ({
 
   createTrail: async (data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/trails`, {
+      const res = await customFetch(`${API_BASE}/trails`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(data)
@@ -396,7 +397,7 @@ export const useStore = create<AppState>((set) => ({
 
   deleteTrail: async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/trails/${id}`, { method: 'DELETE', headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/trails/${id}`, { method: 'DELETE', headers: getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to delete trail')
       useStore.getState().fetchTrails()
     } catch (e) {
@@ -408,7 +409,7 @@ export const useStore = create<AppState>((set) => ({
   fetchTires: async (page = 1, limit = 10) => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/tires?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
+      const res = await customFetch(`${API_BASE}/tires?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
       set({ tires: data.data || data, tiresMeta: data.meta || null })
     } catch (e) {
@@ -420,7 +421,7 @@ export const useStore = create<AppState>((set) => ({
 
   createTire: async (data: any) => {
     try {
-      const res = await fetch(`${API_BASE}/tires`, {
+      const res = await customFetch(`${API_BASE}/tires`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(data)
@@ -435,7 +436,7 @@ export const useStore = create<AppState>((set) => ({
 
   updateTireStatus: async (id: string, status: string, vehicleId?: string, unitMileage?: number) => {
     try {
-      const res = await fetch(`${API_BASE}/tires/${id}/status`, {
+      const res = await customFetch(`${API_BASE}/tires/${id}/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ status, vehicleId, unitMileage })

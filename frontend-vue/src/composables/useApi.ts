@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { unref, type Ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
+import { customFetch } from '@/lib/fetchInterceptor'
 
 const API_URL = 'http://localhost:4000/api'
 
@@ -9,7 +10,7 @@ export function useStats() {
     queryKey: ['stats'],
     queryFn: async () => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/dashboard/statistics`, { headers: auth.getAuthHeaders() })
+      const res = await customFetch(`${API_URL}/dashboard/statistics`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load stats')
       return res.json()
     }
@@ -27,7 +28,7 @@ export function useRoles(page?: Ref<number> | number, limit?: Ref<number> | numb
       if (p !== undefined) params.append('page', p.toString())
       if (l !== undefined) params.append('limit', l.toString())
       const qs = params.toString() ? `?${params.toString()}` : ''
-      const res = await fetch(`${API_URL}/iam/roles${qs}`, { headers: auth.getAuthHeaders() })
+      const res = await customFetch(`${API_URL}/iam/roles${qs}`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load roles')
       return res.json()
     }
@@ -45,7 +46,7 @@ export function useUsers(page?: Ref<number> | number, limit?: Ref<number> | numb
       if (p !== undefined) params.append('page', p.toString())
       if (l !== undefined) params.append('limit', l.toString())
       const qs = params.toString() ? `?${params.toString()}` : ''
-      const res = await fetch(`${API_URL}/iam/users${qs}`, { headers: auth.getAuthHeaders() })
+      const res = await customFetch(`${API_URL}/iam/users${qs}`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load users')
       return res.json()
     }
@@ -57,7 +58,7 @@ export function usePermissions() {
     queryKey: ['permissions'],
     queryFn: async () => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/iam/permissions`, { headers: auth.getAuthHeaders() })
+      const res = await customFetch(`${API_URL}/iam/permissions`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load permissions')
       return res.json()
     }
@@ -69,7 +70,7 @@ export function useCreateRole() {
   return useMutation({
     mutationFn: async (newRole: any) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/iam/roles`, {
+      const res = await customFetch(`${API_URL}/iam/roles`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
         body: JSON.stringify(newRole)
@@ -91,7 +92,7 @@ export function useUpdateRole() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/iam/roles/${id}`, {
+      const res = await customFetch(`${API_URL}/iam/roles/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
         body: JSON.stringify(data)
@@ -134,7 +135,7 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: async (newUser: any) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/iam/users`, {
+      const res = await customFetch(`${API_URL}/iam/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
         body: JSON.stringify(newUser)
@@ -156,7 +157,7 @@ export function useUpdateUser() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/iam/users/${id}`, {
+      const res = await customFetch(`${API_URL}/iam/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
         body: JSON.stringify(data)
@@ -253,7 +254,7 @@ export function useCreateVehicle() {
   return useMutation({
     mutationFn: async (newVehicle: any) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/vehicles`, {
+      const res = await customFetch(`${API_URL}/vehicles`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
         body: JSON.stringify(newVehicle)
@@ -276,7 +277,7 @@ export function useUpdateVehicle() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/vehicles/${id}`, {
+      const res = await customFetch(`${API_URL}/vehicles/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
         body: JSON.stringify(data)
@@ -299,7 +300,7 @@ export function useDeleteVehicle() {
   return useMutation({
     mutationFn: async (id: string) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/vehicles/${id}`, {
+      const res = await customFetch(`${API_URL}/vehicles/${id}`, {
         method: 'DELETE',
         headers: auth.getAuthHeaders()
       })
@@ -319,12 +320,12 @@ export function useDeleteVehicle() {
 export function useCreateTrail() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (newTrail: any) => {
+    mutationFn: async (newSetup: any) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/trails`, {
+      const res = await customFetch(`${API_URL}/trails`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
-        body: JSON.stringify(newTrail)
+        body: JSON.stringify(newSetup)
       })
       if (!res.ok) {
         const err = await res.json()
@@ -342,9 +343,9 @@ export function useCreateTrail() {
 export function useDeleteTrail() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (trailId: string) => {
+    mutationFn: async (id: string) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/trails/${trailId}`, {
+      const res = await customFetch(`${API_URL}/trails/${id}`, {
         method: 'DELETE',
         headers: auth.getAuthHeaders()
       })
@@ -352,7 +353,7 @@ export function useDeleteTrail() {
         const err = await res.json()
         throw new Error(err.message || 'Failed to delete trail')
       }
-      return { id: trailId }
+      return { id }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trails'] })
@@ -366,7 +367,7 @@ export function useCreateTire() {
   return useMutation({
     mutationFn: async (newTire: any) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/tires`, {
+      const res = await customFetch(`${API_URL}/tires`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
         body: JSON.stringify(newTire)
@@ -387,12 +388,12 @@ export function useCreateTire() {
 export function useUpdateTireStatus() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ tireId, status, vehicleId, unitMileage }: any) => {
+    mutationFn: async (payload: { id: string, status: string, vehicleId?: string, unitMileage?: number }) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/tires/${tireId}/status`, {
-        method: 'PUT',
+      const res = await customFetch(`${API_URL}/tires/${payload.id}/status`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', ...auth.getAuthHeaders() },
-        body: JSON.stringify({ status, vehicleId, unitMileage })
+        body: JSON.stringify(payload)
       })
       if (!res.ok) {
         const err = await res.json()
@@ -412,7 +413,7 @@ export function useDeleteTire() {
   return useMutation({
     mutationFn: async (id: string) => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/tires/${id}`, {
+      const res = await customFetch(`${API_URL}/tires/${id}`, {
         method: 'DELETE',
         headers: auth.getAuthHeaders()
       })
