@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -236,7 +235,7 @@ const handleDelete = async (trailId: string) => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                <AlertDialogAction @click="handleDelete(t.id)" class="bg-red-600 text-white hover:bg-red-700">Delete</AlertDialogAction>
+                <Button @click="handleDelete(t.id)" class="bg-red-600 text-white hover:bg-red-700">Delete</Button>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -414,7 +413,7 @@ const handleDelete = async (trailId: string) => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                      <AlertDialogAction @click="handleDelete(t.id)" class="bg-red-600 text-white hover:bg-red-700">Delete</AlertDialogAction>
+                      <Button @click="handleDelete(t.id)" class="bg-red-600 text-white hover:bg-red-700">Delete</Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

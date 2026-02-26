@@ -294,6 +294,28 @@ export function useUpdateVehicle() {
   })
 }
 
+export function useDeleteVehicle() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/vehicles/${id}`, {
+        method: 'DELETE',
+        headers: auth.getAuthHeaders()
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to delete vehicle')
+      }
+      return { id }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
+    }
+  })
+}
+
 export function useCreateTrail() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -377,6 +399,28 @@ export function useUpdateTireStatus() {
         throw new Error(err.message || 'Failed to update tire status')
       }
       return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tires'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
+    }
+  })
+}
+
+export function useDeleteTire() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const auth = useAuthStore()
+      const res = await fetch(`${API_URL}/tires/${id}`, {
+        method: 'DELETE',
+        headers: auth.getAuthHeaders()
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.message || 'Failed to delete tire')
+      }
+      return { id }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tires'] })

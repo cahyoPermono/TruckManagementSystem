@@ -84,12 +84,14 @@ interface AppState {
   fetchVehicles: (page?: number, limit?: number) => Promise<void>
   createVehicle: (data: any) => Promise<void>
   updateVehicle: (id: string, data: any) => Promise<void>
+  deleteVehicle: (id: string) => Promise<void>
   fetchTrails: (page?: number, limit?: number) => Promise<void>
   createTrail: (data: any) => Promise<void>
   deleteTrail: (id: string) => Promise<void>
   fetchTires: (page?: number, limit?: number) => Promise<void>
   createTire: (data: any) => Promise<void>
   updateTireStatus: (id: string, status: string, vehicleId?: string, unitMileage?: number) => Promise<void>
+  deleteTire: (id: string) => Promise<void>
   fetchRoles: (page?: number, limit?: number) => Promise<void>
   createRole: (data: any) => Promise<void>
   updateRole: (id: string, data: any) => Promise<void>
@@ -350,6 +352,20 @@ export const useStore = create<AppState>((set) => ({
     }
   },
 
+  deleteVehicle: async (id: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/vehicles/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      })
+      if (!res.ok) throw new Error('Failed to delete vehicle')
+      useStore.getState().fetchVehicles()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
   fetchTrails: async (page = 1, limit = 10) => {
     set({ isLoading: true })
     try {
@@ -425,6 +441,20 @@ export const useStore = create<AppState>((set) => ({
         body: JSON.stringify({ status, vehicleId, unitMileage })
       })
       if (!res.ok) throw new Error('Failed to update tire status')
+      useStore.getState().fetchTires()
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  },
+
+  deleteTire: async (id: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/tires/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      })
+      if (!res.ok) throw new Error('Failed to delete tire')
       useStore.getState().fetchTires()
     } catch (e) {
       console.error(e)

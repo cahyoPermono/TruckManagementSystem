@@ -8,7 +8,6 @@ import { useStore, useAuthStore } from '../../store'
 import { RoleDialog } from '@/components/RoleDialog'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -117,7 +116,7 @@ export function Roles() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel className="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                          <AlertDialogAction
+                          <Button 
                             onClick={async () => {
                               await deleteRole(role.id)
                               toast.success("Role deleted successfully")
@@ -125,7 +124,7 @@ export function Roles() {
                             className="bg-red-600 text-white hover:bg-red-700"
                           >
                             Delete
-                          </AlertDialogAction>
+                          </Button>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

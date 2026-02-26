@@ -134,7 +134,13 @@ export const IamService = (prisma: PrismaClient) => ({
   },
 
   deleteRole: async (id: string) => {
-    return prisma.role.delete({ where: { id } })
+    return prisma.$transaction(async (tx) => {
+      await tx.user.updateMany({
+        where: { roleId: id },
+        data: { roleId: null }
+      })
+      return tx.role.delete({ where: { id } })
+    })
   },
 
   // --- PERMISSIONS ---

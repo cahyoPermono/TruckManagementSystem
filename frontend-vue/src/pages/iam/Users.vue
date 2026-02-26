@@ -21,7 +21,6 @@ interface User {
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -146,9 +145,9 @@ const deleteUser = async (user: User) => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                    <AlertDialogAction @click="deleteUser(user)" class="bg-red-600 text-white hover:bg-red-700">
+                    <Button @click="deleteUser(user)" class="bg-red-600 text-white hover:bg-red-700">
                       Delete
-                    </AlertDialogAction>
+                    </Button>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

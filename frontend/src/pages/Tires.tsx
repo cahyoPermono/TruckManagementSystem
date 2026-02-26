@@ -8,13 +8,14 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CirclePlus, Loader2, GaugeCircle, History } from "lucide-react"
+import { CirclePlus, Loader2, GaugeCircle, History, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { PaginationControls } from "@/components/PaginationControls"
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
 export default function Tires() {
-  const { tires, tiresMeta, fetchTires, createTire, updateTireStatus, vehicles, fetchVehicles, isLoading } = useStore()
+  const { tires, tiresMeta, fetchTires, createTire, updateTireStatus, deleteTire, vehicles, fetchVehicles, isLoading } = useStore()
   const { user } = useAuthStore()
   const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:tires')
   const [currentPage, setCurrentPage] = useState(1)
@@ -78,6 +79,23 @@ export default function Tires() {
     }
   }
 
+  const [tireToDelete, setTireToDelete] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDelete = async () => {
+    if (!tireToDelete) return
+    setIsDeleting(true)
+    try {
+      await deleteTire(tireToDelete)
+      toast.success("Tire deleted successfully")
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete tire")
+    } finally {
+      setIsDeleting(false)
+      setTireToDelete(null)
+    }
+  }
+
   const openUpdateModal = (tire: any) => {
     setSelectedTire(tire)
     setNewStatus(tire.status)
@@ -86,6 +104,7 @@ export default function Tires() {
   }
 
   return (
+    <>
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -295,11 +314,21 @@ export default function Tires() {
                         </Badge>
                       ) : <span className="text-slate-600">-</span>}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right whitespace-nowrap">
                        {canManage && (
-                       <Button variant="ghost" size="sm" onClick={() => openUpdateModal(t)} className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
-                         <History className="h-4 w-4 mr-2" /> Log Action
-                       </Button>
+                         <div className="flex items-center justify-end gap-1">
+                           <Button variant="ghost" size="sm" onClick={() => openUpdateModal(t)} className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 h-8 px-2 text-xs">
+                             <History className="h-4 w-4 mr-1.5" /> Log Action
+                           </Button>
+                           <Button 
+                             variant="ghost" 
+                             size="icon" 
+                             onClick={() => setTireToDelete(t.id)}
+                             className="text-red-400 hover:text-red-300 hover:bg-red-400/10 h-8 w-8"
+                             title="Delete Tire">
+                             <Trash2 className="h-4 w-4" />
+                           </Button>
+                         </div>
                        )}
                     </TableCell>
                   </TableRow>
@@ -317,5 +346,30 @@ export default function Tires() {
         </CardContent>
       </Card>
     </motion.div>
+
+    <AlertDialog open={!!tireToDelete} onOpenChange={(open) => !open && setTireToDelete(null)}>
+      <AlertDialogContent className="bg-slate-900 border-slate-800 text-slate-50">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription className="text-slate-400">
+            This action cannot be undone. This will permanently delete the tire 
+            <span className="font-bold text-slate-200 mx-1">{tireToDelete}</span>
+            and remove its history from the system.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setTireToDelete(null)} className="bg-transparent border-slate-700 hover:bg-slate-800 text-slate-300">Cancel</AlertDialogCancel>
+          <Button 
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+            Delete
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   )
 }

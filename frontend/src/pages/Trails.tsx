@@ -13,7 +13,6 @@ import { VehicleTiresDialog } from "@/components/VehicleTiresDialog"
 import { VehicleMobilityDialog } from "@/components/VehicleMobilityDialog"
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -325,7 +324,7 @@ export default function Trails() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel className="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => handleDelete(t.id)} className="bg-red-600 text-white hover:bg-red-700">Delete</AlertDialogAction>
+                <Button onClick={() => handleDelete(t.id)} className="bg-red-600 text-white hover:bg-red-700">Delete</Button>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -541,7 +540,7 @@ export default function Trails() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel className="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(t.id)} className="bg-red-600 text-white hover:bg-red-700">Delete</AlertDialogAction>
+                      <Button onClick={() => handleDelete(t.id)} className="bg-red-600 text-white hover:bg-red-700">Delete</Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

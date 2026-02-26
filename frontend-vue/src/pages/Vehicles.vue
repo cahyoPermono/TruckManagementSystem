@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useVehicles, useCreateVehicle } from '@/composables/useApi'
+import { useVehicles, useCreateVehicle, useDeleteVehicle } from '@/composables/useApi'
 import PaginationControls from '@/components/PaginationControls.vue'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { PlusCircle, Loader2, LayoutGrid, List, Image as ImageIcon, Circle, MapPin, Edit } from 'lucide-vue-next'
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { PlusCircle, Loader2, LayoutGrid, List, Image as ImageIcon, Circle, MapPin, Edit, Trash2 } from 'lucide-vue-next'
 import VehicleTiresDialog from '@/components/VehicleTiresDialog.vue'
 import VehicleMobilityDialog from '@/components/VehicleMobilityDialog.vue'
 import VehicleEditDialog from '@/components/VehicleEditDialog.vue'
@@ -20,6 +21,7 @@ import { useAuthStore } from '@/stores/auth'
 const currentPage = ref(1)
 const { data, isLoading } = useVehicles(currentPage, 10)
 const { mutateAsync: createVehicle, isPending: isSubmitting } = useCreateVehicle()
+const { mutateAsync: deleteVehicle, isPending: isDeleting } = useDeleteVehicle()
 
 const auth = useAuthStore()
 const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:vehicles'))
@@ -28,6 +30,7 @@ const vehicles = computed(() => data.value?.data || [])
 const vehiclesMeta = computed(() => data.value?.meta || null)
 const isAddOpen = ref(false)
 const viewType = ref<'table' | 'card'>('card')
+const vehicleToDelete = ref<string | null>(null)
 
 const initialForm = { id: '', kind: 'THEAD', brand: '', model: '', modelYear: '', plateNo: '', frameNo: '', nbWheels: 10, imageUrl: '' }
 const formData = ref({ ...initialForm })
@@ -67,6 +70,18 @@ const handleSubmit = async (e: Event) => {
   } catch (err) {
     console.error(err)
     toast.error("Failed to register vehicle")
+  }
+}
+
+const handleDelete = async () => {
+  if (!vehicleToDelete.value) return
+  try {
+    await deleteVehicle(vehicleToDelete.value)
+    toast.success("Vehicle deleted successfully")
+  } catch (err: any) {
+    toast.error(err.message || "Failed to delete vehicle")
+  } finally {
+    vehicleToDelete.value = null
   }
 }
 
@@ -242,11 +257,20 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                      View Tires
                    </Button>
                 </VehicleTiresDialog>
-                <VehicleEditDialog v-if="canManage" :vehicle="v">
-                   <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px] text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
-                     Edit
-                   </Button>
-                </VehicleEditDialog>
+                <div v-if="canManage" class="flex items-center gap-1">
+                  <VehicleEditDialog :vehicle="v">
+                     <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px] text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
+                       Edit
+                     </Button>
+                  </VehicleEditDialog>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    @click="vehicleToDelete = v.id"
+                    class="h-6 px-2 text-[10px] text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                    Delete
+                  </Button>
+                </div>
               </div>
             </div>
             <div class="flex justify-between text-sm items-center pt-2 border-t border-slate-800/60">
@@ -334,11 +358,21 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                        <MapPin class="h-3 w-3" />
                      </Button>
                   </VehicleMobilityDialog>
-                  <VehicleEditDialog v-if="canManage" :vehicle="v">
-                     <Button variant="ghost" size="icon" class="h-6 w-6 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300" title="Edit Vehicle">
-                       <Edit class="h-3 w-3" />
-                     </Button>
-                  </VehicleEditDialog>
+                  <div v-if="canManage" class="flex items-center gap-2 mt-1">
+                    <VehicleEditDialog :vehicle="v">
+                       <Button variant="ghost" size="icon" class="h-6 w-6 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300" title="Edit Vehicle">
+                         <Edit class="h-3 w-3" />
+                       </Button>
+                    </VehicleEditDialog>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      @click="vehicleToDelete = v.id"
+                      class="h-6 w-6 text-red-400 hover:bg-red-500/10 hover:text-red-300" 
+                      title="Delete Vehicle">
+                      <Trash2 class="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               </TableCell>
               <TableCell>
@@ -360,5 +394,30 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
         />
       </CardContent>
     </Card>
+
+    <AlertDialog :open="!!vehicleToDelete" @update:open="(val) => !val && (vehicleToDelete = null)">
+      <AlertDialogContent class="bg-slate-900 border-slate-800 text-slate-50">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription class="text-slate-400">
+            This action cannot be undone. This will permanently delete the vehicle 
+            <span class="font-bold text-slate-200 mx-1">{{ vehicleToDelete }}</span>
+            and remove it from the system.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="vehicleToDelete = null" class="bg-transparent border-slate-700 hover:bg-slate-800 text-slate-300">Cancel</AlertDialogCancel>
+          <Button 
+            @click="handleDelete"
+            :disabled="isDeleting"
+            class="bg-red-600 hover:bg-red-700 text-white"
+          >
+            <Loader2 v-if="isDeleting" class="mr-2 h-4 w-4 animate-spin" />
+            <Trash2 v-else class="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

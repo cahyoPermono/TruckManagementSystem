@@ -5,11 +5,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { CirclePlus, Loader2, GaugeCircle, History } from 'lucide-vue-next'
-import { useTires, useVehicles, useCreateTire, useUpdateTireStatus } from '@/composables/useApi'
+import { CirclePlus, Loader2, GaugeCircle, History, Trash2 } from 'lucide-vue-next'
+import { useTires, useVehicles, useCreateTire, useUpdateTireStatus, useDeleteTire } from '@/composables/useApi'
 import PaginationControls from '@/components/PaginationControls.vue'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '@/stores/auth'
@@ -19,6 +20,7 @@ const { data: tiresData, isLoading } = useTires(currentPage, 10)
 const { data: vehiclesData } = useVehicles(1, 500)
 const { mutateAsync: createTire, isPending: isSubmittingCreate } = useCreateTire()
 const { mutateAsync: updateTireStatus, isPending: isSubmittingUpdate } = useUpdateTireStatus()
+const { mutateAsync: deleteTire, isPending: isDeleting } = useDeleteTire()
 
 const tires = computed(() => tiresData.value?.data || [])
 const tiresMeta = computed(() => tiresData.value?.meta || null)
@@ -30,6 +32,7 @@ const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => 
 const isAddOpen = ref(false)
 const isUpdateOpen = ref(false)
 const selectedTire = ref<any>(null)
+const tireToDelete = ref<string | null>(null)
 
 // Add Form
 const id = ref('')
@@ -84,6 +87,18 @@ const handleUpdateStatus = async (e: Event) => {
   } catch (err: any) {
     toast.error(err.message || 'Failed to update tire status')
     console.error(err)
+  }
+}
+
+const handleDelete = async () => {
+  if (!tireToDelete.value) return
+  try {
+    await deleteTire(tireToDelete.value)
+    toast.success("Tire deleted successfully")
+  } catch (err: any) {
+    toast.error(err.message || "Failed to delete tire")
+  } finally {
+    tireToDelete.value = null
   }
 }
 
@@ -270,10 +285,20 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
                 </Badge>
                 <span v-else class="text-slate-600">-</span>
               </TableCell>
-              <TableCell class="text-right">
-                 <Button v-if="canManage" variant="ghost" size="sm" @click="openUpdateModal(t)" class="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
-                   <History class="h-4 w-4 mr-2" /> Log Action
-                 </Button>
+              <TableCell class="text-right whitespace-nowrap">
+                 <div v-if="canManage" class="flex items-center justify-end gap-1">
+                   <Button variant="ghost" size="sm" @click="openUpdateModal(t)" class="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 h-8 px-2 text-xs">
+                     <History class="h-4 w-4 mr-1.5" /> Log Action
+                   </Button>
+                   <Button 
+                     variant="ghost" 
+                     size="icon" 
+                     @click="tireToDelete = t.id"
+                     class="text-red-400 hover:text-red-300 hover:bg-red-400/10 h-8 w-8"
+                     title="Delete Tire">
+                     <Trash2 class="h-4 w-4" />
+                   </Button>
+                 </div>
               </TableCell>
             </TableRow>
           </TableBody>
@@ -287,5 +312,30 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
         />
       </CardContent>
     </Card>
+
+    <AlertDialog :open="!!tireToDelete" @update:open="(val) => !val && (tireToDelete = null)">
+      <AlertDialogContent class="bg-slate-900 border-slate-800 text-slate-50">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription class="text-slate-400">
+            This action cannot be undone. This will permanently delete the tire 
+            <span class="font-bold text-slate-200 mx-1">{{ tireToDelete }}</span>
+            and remove its history from the system.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="tireToDelete = null" class="bg-transparent border-slate-700 hover:bg-slate-800 text-slate-300">Cancel</AlertDialogCancel>
+          <Button 
+            @click="handleDelete"
+            :disabled="isDeleting"
+            class="bg-red-600 hover:bg-red-700 text-white"
+          >
+            <Loader2 v-if="isDeleting" class="mr-2 h-4 w-4 animate-spin" />
+            <Trash2 v-else class="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

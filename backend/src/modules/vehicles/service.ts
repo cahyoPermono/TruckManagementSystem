@@ -80,8 +80,42 @@ export class VehicleService {
   }
 
   async deleteVehicle(id: string): Promise<Vehicle> {
-    return this.prisma.vehicle.delete({
-      where: { id }
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Detach any tires attached to this vehicle
+      await tx.tire.updateMany({
+        where: { attachedToId: id },
+        data: { attachedToId: null, status: 'DETACHED' }
+      })
+
+      // 2. Identify all TrailSetups linked to this vehicle (as head or trailer)
+      const setupsAsHead = await tx.trailSetup.findMany({
+        where: { headId: id },
+        select: { id: true }
+      })
+
+      const setupsAsTrailer = await tx.trailTrailer.findMany({
+        where: { trailerId: id },
+        select: { setupId: true }
+      })
+
+      const setupIdsToDelete = [
+        ...setupsAsHead.map(s => s.id),
+        ...setupsAsTrailer.map(s => s.setupId)
+      ]
+
+      const uniqueSetupIds = [...new Set(setupIdsToDelete)]
+
+      // 3. Delete those TrailSetups (TrailTrailers will cascade automatically)
+      if (uniqueSetupIds.length > 0) {
+        await tx.trailSetup.deleteMany({
+          where: { id: { in: uniqueSetupIds } }
+        })
+      }
+
+      // 4. Finally delete the vehicle (MobilityLogs will cascade cleanly)
+      return tx.vehicle.delete({
+        where: { id }
+      })
     })
   }
 }

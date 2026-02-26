@@ -10,7 +10,6 @@ import PaginationControls from '@/components/PaginationControls.vue'
 import { ref } from 'vue'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -120,9 +119,9 @@ const deleteRole = async (role: any) => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel class="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                      <AlertDialogAction @click="deleteRole(role)" class="bg-red-600 text-white hover:bg-red-700">
+                      <Button @click="deleteRole(role)" class="bg-red-600 text-white hover:bg-red-700">
                         Delete
-                      </AlertDialogAction>
+                      </Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

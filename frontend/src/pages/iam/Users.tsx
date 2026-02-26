@@ -8,7 +8,6 @@ import { useStore, useAuthStore } from '../../store'
 import { UserDialog } from '@/components/UserDialog'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -132,7 +131,7 @@ export function Users() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel className="bg-slate-800 text-white hover:bg-slate-700 border-slate-600">Cancel</AlertDialogCancel>
-                          <AlertDialogAction
+                          <Button
                             onClick={async () => {
                               await deleteUser(user.id)
                               toast.success("User deleted successfully")
@@ -140,7 +139,7 @@ export function Users() {
                             className="bg-red-600 text-white hover:bg-red-700"
                           >
                             Delete
-                          </AlertDialogAction>
+                          </Button>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
