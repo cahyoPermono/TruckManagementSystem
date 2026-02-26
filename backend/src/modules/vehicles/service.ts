@@ -7,18 +7,38 @@ export class VehicleService {
     this.prisma = prisma
   }
 
-  async getAllVehicles(queries: { kind?: any }): Promise<Vehicle[]> {
-    return this.prisma.vehicle.findMany({
-      where: queries.kind ? { kind: queries.kind } : {},
-      include: {
-        tires: true,
-        mobilityLogs: {
-          orderBy: { timestamp: 'desc' },
-          take: 10
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+  async getAllVehicles(queries: { kind?: any, page?: number, limit?: number }) {
+    const page = queries.page || 1
+    const limit = queries.limit || 10
+    const skip = (page - 1) * limit
+    const where = queries.kind ? { kind: queries.kind } : {}
+
+    const [data, totalCount] = await Promise.all([
+      this.prisma.vehicle.findMany({
+        where,
+        include: {
+          tires: true,
+          mobilityLogs: {
+            orderBy: { timestamp: 'desc' },
+            take: 10
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      this.prisma.vehicle.count({ where })
+    ])
+
+    return {
+      data,
+      meta: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit
+      }
+    }
   }
 
   async getVehicleById(id: string): Promise<Vehicle | null> {

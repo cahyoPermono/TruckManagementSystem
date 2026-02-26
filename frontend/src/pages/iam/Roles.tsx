@@ -19,18 +19,20 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
+import { PaginationControls } from "@/components/PaginationControls"
 
 
 export function Roles() {
-  const { roles, permissions, fetchRoles, fetchPermissions, deleteRole } = useStore()
+  const { roles, rolesMeta, permissions, fetchRoles, fetchPermissions, deleteRole } = useStore()
   const { user } = useAuthStore()
   const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:iam')
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      await Promise.all([fetchRoles(), fetchPermissions()])
+      await Promise.all([fetchRoles(currentPage, 10), fetchPermissions()])
     } catch (e) {
       console.error(e)
     } finally {
@@ -40,7 +42,7 @@ export function Roles() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [currentPage])
 
   return (
     <motion.div 
@@ -132,6 +134,14 @@ export function Roles() {
                 </CardContent>
               </Card>
             ))
+          )}
+          
+          {rolesMeta && roles.length > 0 && (
+            <PaginationControls 
+              currentPage={rolesMeta.currentPage} 
+              totalPages={rolesMeta.totalPages} 
+              onPageChange={(page) => setCurrentPage(page)} 
+            />
           )}
         </div>
 

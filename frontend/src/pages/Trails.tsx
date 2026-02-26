@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
+import { PaginationControls } from "@/components/PaginationControls"
 
 export const TruckSimulation = ({ type, hasHead, hasT1, hasT2 }: { type: string, hasHead: boolean, hasT1: boolean, hasT2: boolean }) => {
   return (
@@ -74,9 +75,10 @@ export const TruckSimulation = ({ type, hasHead, hasT1, hasT2 }: { type: string,
 }
 
 export default function Trails() {
-  const { trails, fetchTrails, vehicles, fetchVehicles, createTrail, deleteTrail, isLoading } = useStore()
+  const { trails, trailsMeta, fetchTrails, vehicles, fetchVehicles, createTrail, deleteTrail, isLoading } = useStore()
   const { user } = useAuthStore()
   const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:trails')
+  const [currentPage, setCurrentPage] = useState(1)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [viewType, setViewType] = useState<'table' | 'card'>('card')
   
@@ -90,9 +92,9 @@ export default function Trails() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    fetchTrails()
-    fetchVehicles()
-  }, [])
+    fetchTrails(currentPage, 10)
+    fetchVehicles(1, 500)
+  }, [currentPage])
 
   const heads = vehicles.filter((v) => v.kind === 'THEAD')
   const trailers = vehicles.filter((v) => v.kind === 'TCHASS' || v.kind === 'TDOLLY')
@@ -283,6 +285,7 @@ export default function Trails() {
       </div>
 
       {viewType === 'card' ? (
+        <>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {isLoading && trails.length === 0 ? (
             <div className="col-span-full h-48 flex items-center justify-center text-slate-500">
@@ -410,6 +413,14 @@ export default function Trails() {
             ))
           )}
         </div>
+        {trailsMeta && trails.length > 0 && (
+          <PaginationControls 
+            currentPage={trailsMeta.currentPage} 
+            totalPages={trailsMeta.totalPages} 
+            onPageChange={(page) => setCurrentPage(page)} 
+          />
+        )}
+        </>
       ) : (
       <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-xl shadow-2xl">
         <CardHeader className="border-b border-slate-800/60 pb-4">
@@ -541,6 +552,13 @@ export default function Trails() {
               )}
             </TableBody>
           </Table>
+          {trailsMeta && trails.length > 0 && (
+            <PaginationControls 
+              currentPage={trailsMeta.currentPage} 
+              totalPages={trailsMeta.totalPages} 
+              onPageChange={(page) => setCurrentPage(page)} 
+            />
+          )}
         </CardContent>
       </Card>
       )}

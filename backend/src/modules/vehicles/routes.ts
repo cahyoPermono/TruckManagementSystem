@@ -8,7 +8,7 @@ const vehicleRoutes: FastifyPluginAsync = async (server: FastifyInstance) => {
   const vehicleService = new VehicleService(server.prisma)
   const vehicleController = new VehicleController(vehicleService)
 
-  server.get<{ Querystring: { kind?: string } }>('/', { preHandler: server.verifyPermission('view:vehicles') }, vehicleController.getAllVehicles)
+  server.get<{ Querystring: { kind?: string, page?: string, limit?: string } }>('/', { preHandler: server.verifyPermission('view:vehicles') }, vehicleController.getAllVehicles)
   server.get<{ Params: { id: string } }>('/:id', { preHandler: server.verifyPermission('view:vehicles') }, vehicleController.getVehicleById)
   server.post<{ Body: any }>('/', { preHandler: server.verifyPermission('manage:vehicles') }, vehicleController.createVehicle)
   server.put<{ Params: { id: string }, Body: any }>('/:id', { preHandler: server.verifyPermission('manage:vehicles') }, vehicleController.updateVehicle)

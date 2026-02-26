@@ -12,14 +12,16 @@ import { PlusCircle, Loader2, LayoutGrid, List, Image as ImageIcon, Circle, MapP
 import { VehicleTiresDialog } from "@/components/VehicleTiresDialog"
 import { VehicleMobilityDialog } from "@/components/VehicleMobilityDialog"
 import { VehicleEditDialog } from "@/components/VehicleEditDialog"
+import { PaginationControls } from "@/components/PaginationControls"
 import { Edit } from "lucide-react"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
 
 export default function Vehicles() {
-  const { vehicles, fetchVehicles, isLoading, createVehicle } = useStore()
+  const { vehicles, vehiclesMeta, fetchVehicles, isLoading, createVehicle } = useStore()
   const { user } = useAuthStore()
   const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:vehicles')
+  const [currentPage, setCurrentPage] = useState(1)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [viewType, setViewType] = useState<'table' | 'card'>('card')
   const [formData, setFormData] = useState({ id: '', kind: 'THEAD', brand: '', model: '', modelYear: '', plateNo: '', frameNo: '', nbWheels: '10', imageUrl: '' })
@@ -37,8 +39,8 @@ export default function Vehicles() {
   }
 
   useEffect(() => {
-    fetchVehicles()
-  }, [])
+    fetchVehicles(currentPage, 10)
+  }, [currentPage])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -248,6 +250,7 @@ export default function Vehicles() {
       </div>
 
       {viewType === 'card' ? (
+        <>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading && vehicles.length === 0 ? (
             <div className="col-span-full h-48 flex items-center justify-center text-slate-500">
@@ -344,6 +347,15 @@ export default function Vehicles() {
             ))
           )}
         </div>
+        
+        {vehiclesMeta && vehicles.length > 0 && (
+          <PaginationControls 
+            currentPage={vehiclesMeta.currentPage} 
+            totalPages={vehiclesMeta.totalPages} 
+            onPageChange={(page) => setCurrentPage(page)} 
+          />
+        )}
+      </>
       ) : (
       <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-xl shadow-2xl">
         <CardHeader className="border-b border-slate-800/60 pb-4">
@@ -434,6 +446,14 @@ export default function Vehicles() {
               )}
             </TableBody>
           </Table>
+          
+          {vehiclesMeta && vehicles.length > 0 && (
+            <PaginationControls 
+              currentPage={vehiclesMeta.currentPage} 
+              totalPages={vehiclesMeta.totalPages} 
+              onPageChange={(page) => setCurrentPage(page)} 
+            />
+          )}
         </CardContent>
       </Card>
       )}

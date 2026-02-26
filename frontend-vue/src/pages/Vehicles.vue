@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useVehicles, useCreateVehicle } from '@/composables/useApi'
+import PaginationControls from '@/components/PaginationControls.vue'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
@@ -16,13 +17,15 @@ import VehicleEditDialog from '@/components/VehicleEditDialog.vue'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '@/stores/auth'
 
-const { data, isLoading } = useVehicles()
+const currentPage = ref(1)
+const { data, isLoading } = useVehicles(currentPage, 10)
 const { mutateAsync: createVehicle, isPending: isSubmitting } = useCreateVehicle()
 
 const auth = useAuthStore()
 const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:vehicles'))
 
-const vehicles = computed(() => data.value || [])
+const vehicles = computed(() => data.value?.data || [])
+const vehiclesMeta = computed(() => data.value?.meta || null)
 const isAddOpen = ref(false)
 const viewType = ref<'table' | 'card'>('card')
 
@@ -258,6 +261,14 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
         </CardContent>
       </Card>
     </div>
+    
+    <div v-if="viewType === 'card' && vehiclesMeta && vehicles.length > 0">
+      <PaginationControls 
+        :currentPage="vehiclesMeta.currentPage" 
+        :totalPages="vehiclesMeta.totalPages" 
+        @pageChange="currentPage = $event" 
+      />
+    </div>
 
     <!-- Table View -->
     <Card v-else class="border-slate-800 bg-slate-900/40 backdrop-blur-xl shadow-2xl">
@@ -340,6 +351,13 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
             </TableRow>
           </TableBody>
         </Table>
+        
+        <PaginationControls 
+          v-if="vehiclesMeta && vehicles.length > 0"
+          :currentPage="vehiclesMeta.currentPage" 
+          :totalPages="vehiclesMeta.totalPages" 
+          @pageChange="currentPage = $event" 
+        />
       </CardContent>
     </Card>
   </div>

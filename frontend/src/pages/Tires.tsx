@@ -11,11 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CirclePlus, Loader2, GaugeCircle, History } from "lucide-react"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
+import { PaginationControls } from "@/components/PaginationControls"
 
 export default function Tires() {
-  const { tires, fetchTires, createTire, updateTireStatus, vehicles, fetchVehicles, isLoading } = useStore()
+  const { tires, tiresMeta, fetchTires, createTire, updateTireStatus, vehicles, fetchVehicles, isLoading } = useStore()
   const { user } = useAuthStore()
   const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:tires')
+  const [currentPage, setCurrentPage] = useState(1)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [selectedTire, setSelectedTire] = useState<any>(null)
@@ -34,9 +36,9 @@ export default function Tires() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    fetchTires()
-    fetchVehicles()
-  }, [])
+    fetchTires(currentPage, 10)
+    fetchVehicles(1, 500)
+  }, [currentPage])
 
   const handleCreate = async (e: any) => {
     e.preventDefault()
@@ -305,6 +307,13 @@ export default function Tires() {
               )}
             </TableBody>
           </Table>
+          {tiresMeta && tires.length > 0 && (
+            <PaginationControls 
+              currentPage={tiresMeta.currentPage} 
+              totalPages={tiresMeta.totalPages} 
+              onPageChange={(page) => setCurrentPage(page)} 
+            />
+          )}
         </CardContent>
       </Card>
     </motion.div>

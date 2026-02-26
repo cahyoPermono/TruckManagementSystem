@@ -8,7 +8,7 @@ const tireRoutes: FastifyPluginAsync = async (server: FastifyInstance) => {
   const tireService = new TireService(server.prisma)
   const tireController = new TireController(tireService)
 
-  server.get('/', { preHandler: server.verifyPermission('view:tires') }, tireController.getAll)
+  server.get<{ Querystring: { page?: string, limit?: string } }>('/', { preHandler: server.verifyPermission('view:tires') }, tireController.getAll)
   server.get<{ Params: { id: string } }>('/:id', { preHandler: server.verifyPermission('view:tires') }, tireController.getById)
   server.post<{ Body: any }>('/', { preHandler: server.verifyPermission('manage:tires') }, tireController.create)
   server.put<{ Params: { id: string }, Body: any }>('/:id', { preHandler: server.verifyPermission('manage:tires') }, tireController.update)

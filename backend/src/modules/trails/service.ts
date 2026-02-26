@@ -7,17 +7,36 @@ export class TrailService {
     this.prisma = prisma
   }
 
-  async getAll(): Promise<TrailSetup[]> {
-    return this.prisma.trailSetup.findMany({
-      include: {
-        head: { include: { tires: true, mobilityLogs: { orderBy: { timestamp: 'desc' }, take: 10 } } },
-        trailers: {
-          include: { trailer: { include: { tires: true, mobilityLogs: { orderBy: { timestamp: 'desc' }, take: 10 } } } },
-          orderBy: { order: 'asc' }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+  async getAll(queries: { page?: number, limit?: number } = {}) {
+    const page = queries.page || 1
+    const limit = queries.limit || 10
+    const skip = (page - 1) * limit
+
+    const [data, totalCount] = await Promise.all([
+      this.prisma.trailSetup.findMany({
+        include: {
+          head: { include: { tires: true, mobilityLogs: { orderBy: { timestamp: 'desc' }, take: 10 } } },
+          trailers: {
+            include: { trailer: { include: { tires: true, mobilityLogs: { orderBy: { timestamp: 'desc' }, take: 10 } } } },
+            orderBy: { order: 'asc' }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      this.prisma.trailSetup.count()
+    ])
+
+    return {
+      data,
+      meta: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit
+      }
+    }
   }
 
   async getById(id: string): Promise<TrailSetup | null> {

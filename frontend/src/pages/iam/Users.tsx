@@ -19,17 +19,19 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
+import { PaginationControls } from "@/components/PaginationControls"
 
 export function Users() {
-  const { users, roles, fetchUsers, fetchRoles, deleteUser } = useStore()
+  const { users, usersMeta, roles, fetchUsers, fetchRoles, deleteUser } = useStore()
   const { user } = useAuthStore()
   const canManage = user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:iam')
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      await Promise.all([fetchUsers(), fetchRoles()])
+      await Promise.all([fetchUsers(currentPage, 10), fetchRoles(1, 100)])
     } catch (e) {
       console.error(e)
     } finally {
@@ -39,7 +41,7 @@ export function Users() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [currentPage])
 
   return (
     <motion.div 
@@ -79,6 +81,7 @@ export function Users() {
           {loading ? (
             <div className="p-8 text-center text-slate-400">Loading users...</div>
           ) : (
+            <>
             <div className="divide-y divide-slate-800">
               {users.map(user => (
                 <div key={user.id} className="flex items-center justify-between p-4 hover:bg-slate-800/30 transition-colors">
@@ -149,6 +152,15 @@ export function Users() {
                 <div className="p-8 text-center text-slate-400">No users found.</div>
               )}
             </div>
+            
+            {usersMeta && users.length > 0 && (
+              <PaginationControls 
+                currentPage={usersMeta.currentPage} 
+                totalPages={usersMeta.totalPages} 
+                onPageChange={(page) => setCurrentPage(page)} 
+              />
+            )}
+            </>
           )}
         </CardContent>
       </Card>

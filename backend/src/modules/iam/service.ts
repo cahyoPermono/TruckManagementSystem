@@ -3,11 +3,30 @@ import bcrypt from 'bcrypt'
 
 export const IamService = (prisma: PrismaClient) => ({
   // --- USERS ---
-  getUsers: async () => {
-    return prisma.user.findMany({
-      include: { role: true },
-      orderBy: { createdAt: 'desc' }
-    })
+  getUsers: async (queries: { page?: number, limit?: number } = {}) => {
+    const page = queries.page || 1
+    const limit = queries.limit || 10
+    const skip = (page - 1) * limit
+
+    const [data, totalCount] = await Promise.all([
+      prisma.user.findMany({
+        include: { role: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      prisma.user.count()
+    ])
+
+    return {
+      data,
+      meta: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit
+      }
+    }
   },
   
   createUser: async (data: any) => {
@@ -44,13 +63,32 @@ export const IamService = (prisma: PrismaClient) => ({
   },
 
   // --- ROLES ---
-  getRoles: async () => {
-    return prisma.role.findMany({
-      include: {
-        permissions: { include: { permission: true } }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+  getRoles: async (queries: { page?: number, limit?: number } = {}) => {
+    const page = queries.page || 1
+    const limit = queries.limit || 10
+    const skip = (page - 1) * limit
+
+    const [data, totalCount] = await Promise.all([
+      prisma.role.findMany({
+        include: {
+          permissions: { include: { permission: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      prisma.role.count()
+    ])
+
+    return {
+      data,
+      meta: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit
+      }
+    }
   },
 
   createRole: async (data: any) => {

@@ -58,32 +58,44 @@ export interface Tire {
   createdAt: string
 }
 
+export interface PaginationMeta {
+  totalCount: number
+  totalPages: number
+  currentPage: number
+  limit: number
+}
+
 interface AppState {
   stats: Stats | null
   logs: Log[]
   vehicles: Vehicle[]
+  vehiclesMeta: PaginationMeta | null
   trails: TrailSetup[]
+  trailsMeta: PaginationMeta | null
   tires: Tire[]
+  tiresMeta: PaginationMeta | null
   roles: any[]
+  rolesMeta: PaginationMeta | null
   users: any[]
+  usersMeta: PaginationMeta | null
   permissions: any[]
   fetchStats: () => Promise<void>
   fetchLogs: () => Promise<void>
-  fetchVehicles: () => Promise<void>
+  fetchVehicles: (page?: number, limit?: number) => Promise<void>
   createVehicle: (data: any) => Promise<void>
   updateVehicle: (id: string, data: any) => Promise<void>
-  fetchTrails: () => Promise<void>
+  fetchTrails: (page?: number, limit?: number) => Promise<void>
   createTrail: (data: any) => Promise<void>
   deleteTrail: (id: string) => Promise<void>
-  fetchTires: () => Promise<void>
+  fetchTires: (page?: number, limit?: number) => Promise<void>
   createTire: (data: any) => Promise<void>
   updateTireStatus: (id: string, status: string, vehicleId?: string, unitMileage?: number) => Promise<void>
-  fetchRoles: () => Promise<void>
+  fetchRoles: (page?: number, limit?: number) => Promise<void>
   createRole: (data: any) => Promise<void>
   updateRole: (id: string, data: any) => Promise<void>
   deleteRole: (id: string) => Promise<void>
   fetchPermissions: () => Promise<void>
-  fetchUsers: () => Promise<void>
+  fetchUsers: (page?: number, limit?: number) => Promise<void>
   createUser: (data: any) => Promise<void>
   updateUser: (id: string, data: any) => Promise<void>
   deleteUser: (id: string) => Promise<void>
@@ -123,11 +135,16 @@ export const useStore = create<AppState>((set) => ({
   stats: null,
   logs: [],
   vehicles: [],
+  vehiclesMeta: null,
   trails: [],
+  trailsMeta: null,
   tires: [],
+  tiresMeta: null,
   roles: [],
+  rolesMeta: null,
   permissions: [],
   users: [],
+  usersMeta: null,
   isLoading: false,
 
   fetchStats: async () => {
@@ -153,11 +170,11 @@ export const useStore = create<AppState>((set) => ({
     }
   },
 
-  fetchRoles: async () => {
+  fetchRoles: async (page = 1, limit = 10) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/roles`, { headers: getAuthHeaders() })
+      const res = await fetch(`${API_BASE}/iam/roles?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
-      set({ roles: data })
+      set({ roles: data.data || data, rolesMeta: data.meta || null })
     } catch (e) {
       console.error(e)
     }
@@ -223,11 +240,11 @@ export const useStore = create<AppState>((set) => ({
     }
   },
 
-  fetchUsers: async () => {
+  fetchUsers: async (page = 1, limit = 10) => {
     try {
-      const res = await fetch(`${API_BASE}/iam/users`, { headers: getAuthHeaders() })
+      const res = await fetch(`${API_BASE}/iam/users?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
-      set({ users: data })
+      set({ users: data.data || data, usersMeta: data.meta || null })
     } catch (e) {
       console.error(e)
     }
@@ -283,12 +300,12 @@ export const useStore = create<AppState>((set) => ({
     }
   },
 
-  fetchVehicles: async () => {
+  fetchVehicles: async (page = 1, limit = 10) => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/vehicles`, { headers: getAuthHeaders() })
+      const res = await fetch(`${API_BASE}/vehicles?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
-      set({ vehicles: data })
+      set({ vehicles: data.data || data, vehiclesMeta: data.meta || null })
     } catch (e) {
       console.error(e)
     } finally {
@@ -333,12 +350,12 @@ export const useStore = create<AppState>((set) => ({
     }
   },
 
-  fetchTrails: async () => {
+  fetchTrails: async (page = 1, limit = 10) => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/trails`, { headers: getAuthHeaders() })
+      const res = await fetch(`${API_BASE}/trails?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
-      set({ trails: data })
+      set({ trails: data.data || data, trailsMeta: data.meta || null })
     } catch (e) {
       console.error(e)
     } finally {
@@ -372,12 +389,12 @@ export const useStore = create<AppState>((set) => ({
     }
   },
 
-  fetchTires: async () => {
+  fetchTires: async (page = 1, limit = 10) => {
     set({ isLoading: true })
     try {
-      const res = await fetch(`${API_BASE}/tires`, { headers: getAuthHeaders() })
+      const res = await fetch(`${API_BASE}/tires?page=${page}&limit=${limit}`, { headers: getAuthHeaders() })
       const data = await res.json()
-      set({ tires: data })
+      set({ tires: data.data || data, tiresMeta: data.meta || null })
     } catch (e) {
       console.error(e)
     } finally {

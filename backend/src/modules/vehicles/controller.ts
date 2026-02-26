@@ -9,13 +9,18 @@ export class VehicleController {
     this.vehicleService = vehicleService
   }
 
-  getAllVehicles = async (request: FastifyRequest<{ Querystring: { kind?: string } }>, reply: FastifyReply) => {
+  getAllVehicles = async (request: FastifyRequest<{ Querystring: { kind?: string, page?: string, limit?: string } }>, reply: FastifyReply) => {
     try {
-      const { kind } = request.query
-      const vehicles = await this.vehicleService.getAllVehicles({
-        kind: kind ? (kind as VehicleKind) : undefined
+      const { kind, page, limit } = request.query
+      const parsedPage = page ? parseInt(page) : undefined
+      const parsedLimit = limit ? parseInt(limit) : undefined
+      
+      const result = await this.vehicleService.getAllVehicles({
+        kind: kind ? (kind as VehicleKind) : undefined,
+        page: parsedPage,
+        limit: parsedLimit
       })
-      reply.send(vehicles)
+      reply.send(result)
     } catch (error: any) {
       reply.status(500).send({ error: error.message })
     }

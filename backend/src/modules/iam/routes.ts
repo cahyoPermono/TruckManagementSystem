@@ -8,8 +8,11 @@ export default async function (fastify: FastifyInstance) {
   fastify.addHook('onRequest', fastify.verifyPermission('manage:iam'))
 
   // USERS
-  fastify.get('/users', async (request, reply) => {
-    return iamService.getUsers()
+  fastify.get<{ Querystring: { page?: string, limit?: string } }>('/users', async (request, reply) => {
+    const { page, limit } = request.query
+    const parsedPage = page ? parseInt(page) : undefined
+    const parsedLimit = limit ? parseInt(limit) : undefined
+    return iamService.getUsers({ page: parsedPage, limit: parsedLimit })
   })
 
   fastify.post('/users', async (request, reply) => {
@@ -41,8 +44,11 @@ export default async function (fastify: FastifyInstance) {
   })
 
   // ROLES
-  fastify.get('/roles', async (request, reply) => {
-    return iamService.getRoles()
+  fastify.get<{ Querystring: { page?: string, limit?: string } }>('/roles', async (request, reply) => {
+    const { page, limit } = request.query
+    const parsedPage = page ? parseInt(page) : undefined
+    const parsedLimit = limit ? parseInt(limit) : undefined
+    return iamService.getRoles({ page: parsedPage, limit: parsedLimit })
   })
 
   fastify.post('/roles', async (request, reply) => {

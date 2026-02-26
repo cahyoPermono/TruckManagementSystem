@@ -24,16 +24,19 @@ import { Loader2, Trash2, Link as LinkIcon, LayoutGrid, List, Circle, MapPin } f
 import TruckSimulation from '@/components/TruckSimulation.vue'
 import VehicleTiresDialog from '@/components/VehicleTiresDialog.vue'
 import VehicleMobilityDialog from '@/components/VehicleMobilityDialog.vue'
+import PaginationControls from '@/components/PaginationControls.vue'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '@/stores/auth'
 
-const { data: trailsData, isLoading } = useTrails()
-const { data: vehiclesData } = useVehicles()
+const currentPage = ref(1)
+const { data: trailsData, isLoading } = useTrails(currentPage, 10)
+const { data: vehiclesData } = useVehicles(1, 500)
 const { mutateAsync: createTrail, isPending: isSubmitting } = useCreateTrail()
 const { mutateAsync: deleteTrail } = useDeleteTrail()
 
-const trails = computed(() => trailsData.value || [])
-const vehicles = computed(() => vehiclesData.value || [])
+const trails = computed(() => trailsData.value?.data || [])
+const trailsMeta = computed(() => trailsData.value?.meta || null)
+const vehicles = computed(() => vehiclesData.value?.data || [])
 
 const auth = useAuthStore()
 const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:trails'))
@@ -304,6 +307,14 @@ const handleDelete = async (trailId: string) => {
         </CardContent>
       </Card>
     </div>
+    
+    <div v-if="viewType === 'card' && trailsMeta && trails.length > 0">
+      <PaginationControls 
+        :currentPage="trailsMeta.currentPage" 
+        :totalPages="trailsMeta.totalPages" 
+        @pageChange="currentPage = $event" 
+      />
+    </div>
 
     <!-- Table View -->
     <Card v-else class="border-slate-800 bg-slate-900/40 backdrop-blur-xl shadow-2xl">
@@ -411,6 +422,13 @@ const handleDelete = async (trailId: string) => {
             </TableRow>
           </TableBody>
         </Table>
+        
+        <PaginationControls 
+          v-if="trailsMeta && trails.length > 0"
+          :currentPage="trailsMeta.currentPage" 
+          :totalPages="trailsMeta.totalPages" 
+          @pageChange="currentPage = $event" 
+        />
       </CardContent>
     </Card>
   </div>

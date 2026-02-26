@@ -8,9 +8,16 @@ export class TrailController {
     this.trailService = trailService
   }
 
-  getAll = async (request: FastifyRequest, reply: FastifyReply) => {
+  getAll = async (request: FastifyRequest<{ Querystring: { page?: string, limit?: string } }>, reply: FastifyReply) => {
     try {
-      const setups = await this.trailService.getAll()
+      const { page, limit } = request.query
+      const parsedPage = page ? parseInt(page) : undefined
+      const parsedLimit = limit ? parseInt(limit) : undefined
+
+      const setups = await this.trailService.getAll({
+        page: parsedPage,
+        limit: parsedLimit
+      })
       reply.send(setups)
     } catch (error: any) {
       reply.status(500).send({ error: error.message })

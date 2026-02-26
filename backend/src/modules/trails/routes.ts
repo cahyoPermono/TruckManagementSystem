@@ -8,7 +8,7 @@ const trailRoutes: FastifyPluginAsync = async (server: FastifyInstance) => {
   const trailService = new TrailService(server.prisma)
   const trailController = new TrailController(trailService)
 
-  server.get('/', { preHandler: server.verifyPermission('view:trails') }, trailController.getAll)
+  server.get<{ Querystring: { page?: string, limit?: string } }>('/', { preHandler: server.verifyPermission('view:trails') }, trailController.getAll)
   server.get<{ Params: { id: string } }>('/:id', { preHandler: server.verifyPermission('view:trails') }, trailController.getById)
   server.post<{ Body: any }>('/', { preHandler: server.verifyPermission('manage:trails') }, trailController.create)
   server.put<{ Params: { id: string }, Body: any }>('/:id', { preHandler: server.verifyPermission('manage:trails') }, trailController.update)

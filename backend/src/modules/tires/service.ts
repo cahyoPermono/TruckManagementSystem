@@ -7,11 +7,30 @@ export class TireService {
     this.prisma = prisma
   }
 
-  async getAll(): Promise<Tire[]> {
-    return this.prisma.tire.findMany({
-      include: { attachedTo: true },
-      orderBy: { createdAt: 'desc' }
-    })
+  async getAll(queries: { page?: number, limit?: number } = {}) {
+    const page = queries.page || 1
+    const limit = queries.limit || 10
+    const skip = (page - 1) * limit
+
+    const [data, totalCount] = await Promise.all([
+      this.prisma.tire.findMany({
+        include: { attachedTo: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      this.prisma.tire.count()
+    ])
+
+    return {
+      data,
+      meta: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit
+      }
+    }
   }
 
   async getById(id: string): Promise<Tire | null> {

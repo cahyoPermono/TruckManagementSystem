@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge'
 import { Shield, Edit, Trash2, Plus } from 'lucide-vue-next'
 import RoleDialog from '@/components/RoleDialog.vue'
 import { useRoles, usePermissions, useDeleteRole } from '@/composables/useApi'
+import PaginationControls from '@/components/PaginationControls.vue'
+import { ref } from 'vue'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +22,14 @@ import {
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '@/stores/auth'
 
-const { data: rolesData, isLoading: rolesLoading } = useRoles()
+const currentPage = ref(1)
+const { data: rolesData, isLoading: rolesLoading } = useRoles(currentPage, 10)
 const { data: permissionsData, isLoading: permsLoading } = usePermissions()
 const { mutateAsync: deleteRoleApi } = useDeleteRole()
 
 const loading = computed(() => rolesLoading.value || permsLoading.value)
-const roles = computed(() => rolesData.value || [])
+const roles = computed(() => rolesData.value?.data || [])
+const rolesMeta = computed(() => rolesData.value?.meta || null)
 const permissions = computed(() => permissionsData.value || [])
 
 const auth = useAuthStore()
@@ -125,6 +129,13 @@ const deleteRole = async (role: any) => {
               </div>
             </CardContent>
           </Card>
+          
+          <PaginationControls 
+            v-if="rolesMeta && roles.length > 0"
+            :currentPage="rolesMeta.currentPage" 
+            :totalPages="rolesMeta.totalPages" 
+            @pageChange="currentPage = $event" 
+          />
         </template>
       </div>
 

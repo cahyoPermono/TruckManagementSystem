@@ -10,16 +10,19 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CirclePlus, Loader2, GaugeCircle, History } from 'lucide-vue-next'
 import { useTires, useVehicles, useCreateTire, useUpdateTireStatus } from '@/composables/useApi'
+import PaginationControls from '@/components/PaginationControls.vue'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '@/stores/auth'
 
-const { data: tiresData, isLoading } = useTires()
-const { data: vehiclesData } = useVehicles()
+const currentPage = ref(1)
+const { data: tiresData, isLoading } = useTires(currentPage, 10)
+const { data: vehiclesData } = useVehicles(1, 500)
 const { mutateAsync: createTire, isPending: isSubmittingCreate } = useCreateTire()
 const { mutateAsync: updateTireStatus, isPending: isSubmittingUpdate } = useUpdateTireStatus()
 
-const tires = computed(() => tiresData.value || [])
-const vehicles = computed(() => vehiclesData.value || [])
+const tires = computed(() => tiresData.value?.data || [])
+const tiresMeta = computed(() => tiresData.value?.meta || null)
+const vehicles = computed(() => vehiclesData.value?.data || [])
 
 const auth = useAuthStore()
 const canManage = computed(() => auth.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:tires'))
@@ -275,6 +278,13 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
             </TableRow>
           </TableBody>
         </Table>
+        
+        <PaginationControls 
+          v-if="tiresMeta && tires.length > 0"
+          :currentPage="tiresMeta.currentPage" 
+          :totalPages="tiresMeta.totalPages" 
+          @pageChange="currentPage = $event" 
+        />
       </CardContent>
     </Card>
   </div>

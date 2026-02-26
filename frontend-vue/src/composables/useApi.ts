@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { unref, type Ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
 const API_URL = 'http://localhost:4000/api'
@@ -15,13 +16,37 @@ export function useStats() {
   })
 }
 
-export function useRoles() {
+export function useRoles(page?: Ref<number> | number, limit?: Ref<number> | number) {
   return useQuery({
-    queryKey: ['roles'],
+    queryKey: ['roles', page, limit],
     queryFn: async () => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/iam/roles`, { headers: auth.getAuthHeaders() })
+      const p = unref(page)
+      const l = unref(limit)
+      const params = new URLSearchParams()
+      if (p !== undefined) params.append('page', p.toString())
+      if (l !== undefined) params.append('limit', l.toString())
+      const qs = params.toString() ? `?${params.toString()}` : ''
+      const res = await fetch(`${API_URL}/iam/roles${qs}`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load roles')
+      return res.json()
+    }
+  })
+}
+
+export function useUsers(page?: Ref<number> | number, limit?: Ref<number> | number) {
+  return useQuery({
+    queryKey: ['users', page, limit],
+    queryFn: async () => {
+      const auth = useAuthStore()
+      const p = unref(page)
+      const l = unref(limit)
+      const params = new URLSearchParams()
+      if (p !== undefined) params.append('page', p.toString())
+      if (l !== undefined) params.append('limit', l.toString())
+      const qs = params.toString() ? `?${params.toString()}` : ''
+      const res = await fetch(`${API_URL}/iam/users${qs}`, { headers: auth.getAuthHeaders() })
+      if (!res.ok) throw new Error('Failed to load users')
       return res.json()
     }
   })
@@ -169,36 +194,54 @@ export function useDeleteUser() {
   })
 }
 
-export function useVehicles() {
+export function useVehicles(page?: Ref<number> | number, limit?: Ref<number> | number) {
   return useQuery({
-    queryKey: ['vehicles'],
+    queryKey: ['vehicles', page, limit],
     queryFn: async () => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/vehicles`, { headers: auth.getAuthHeaders() })
+      const p = unref(page)
+      const l = unref(limit)
+      const params = new URLSearchParams()
+      if (p !== undefined) params.append('page', p.toString())
+      if (l !== undefined) params.append('limit', l.toString())
+      const qs = params.toString() ? `?${params.toString()}` : ''
+      const res = await fetch(`${API_URL}/vehicles${qs}`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load vehicles')
       return res.json()
     }
   })
 }
 
-export function useTrails() {
+export function useTrails(page?: Ref<number> | number, limit?: Ref<number> | number) {
   return useQuery({
-    queryKey: ['trails'],
+    queryKey: ['trails', page, limit],
     queryFn: async () => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/trails`, { headers: auth.getAuthHeaders() })
+      const p = unref(page)
+      const l = unref(limit)
+      const params = new URLSearchParams()
+      if (p !== undefined) params.append('page', p.toString())
+      if (l !== undefined) params.append('limit', l.toString())
+      const qs = params.toString() ? `?${params.toString()}` : ''
+      const res = await fetch(`${API_URL}/trails${qs}`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load trails')
       return res.json()
     }
   })
 }
 
-export function useTires() {
+export function useTires(page?: Ref<number> | number, limit?: Ref<number> | number) {
   return useQuery({
-    queryKey: ['tires'],
+    queryKey: ['tires', page, limit],
     queryFn: async () => {
       const auth = useAuthStore()
-      const res = await fetch(`${API_URL}/tires`, { headers: auth.getAuthHeaders() })
+      const p = unref(page)
+      const l = unref(limit)
+      const params = new URLSearchParams()
+      if (p !== undefined) params.append('page', p.toString())
+      if (l !== undefined) params.append('limit', l.toString())
+      const qs = params.toString() ? `?${params.toString()}` : ''
+      const res = await fetch(`${API_URL}/tires${qs}`, { headers: auth.getAuthHeaders() })
       if (!res.ok) throw new Error('Failed to load tires')
       return res.json()
     }

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { useRoles } from '@/composables/useApi'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useRoles, useUsers } from '@/composables/useApi'
+import PaginationControls from '@/components/PaginationControls.vue'
 import { useAuthStore } from '@/stores/auth'
 import UserDialog from '@/components/UserDialog.vue'
 import { Plus, Search, Shield, UserCog, Edit, Trash2 } from 'lucide-vue-next'
@@ -36,19 +37,12 @@ const queryClient = useQueryClient()
 
 const canManage = computed(() => authStore.user?.role?.permissions?.some((p: any) => p.permission.name === 'manage:iam'))
 
-const { data: rolesData } = useRoles()
-const roles = computed(() => rolesData.value || [])
+const currentPage = ref(1)
 
-const { data: usersData, isLoading: usersLoading } = useQuery({
-  queryKey: ['users'],
-  queryFn: async () => {
-    const res = await fetch('http://localhost:4000/api/iam/users', {
-      headers: authStore.getAuthHeaders()
-    })
-    if (!res.ok) throw new Error('Failed to fetch users')
-    return res.json()
-  }
-})
+const { data: rolesData } = useRoles(1, 100)
+const roles = computed(() => rolesData.value?.data || [])
+
+const { data: usersData, isLoading: usersLoading } = useUsers(currentPage, 10)
 
 const { mutateAsync: deleteUserApi } = useMutation({
   mutationFn: async (userId: string) => {
@@ -65,7 +59,8 @@ const { mutateAsync: deleteUserApi } = useMutation({
 })
 
 const loading = computed(() => usersLoading.value)
-const users = computed(() => usersData.value || [])
+const users = computed(() => usersData.value?.data || [])
+const usersMeta = computed(() => usersData.value?.meta || null)
 
 const deleteUser = async (user: User) => {
   try {
@@ -119,13 +114,15 @@ const deleteUser = async (user: User) => {
             </div>
             
             <div class="flex flex-1 items-center justify-center">
-              <Badge v-if="user.role" variant="outline" class="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
-                <Shield class="w-3 h-3 mr-1" />
-                {{ user.role.name }}
-              </Badge>
-              <Badge v-else variant="outline" class="bg-slate-800 text-slate-400 border-slate-700">
-                No Role
-              </Badge>
+              <div class="w-32 flex justify-center">
+                <Badge v-if="user.role" variant="outline" class="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+                  <Shield class="w-3 h-3 mr-1" />
+                  {{ user.role.name }}
+                </Badge>
+                <Badge v-else variant="outline" class="bg-slate-800 text-slate-400 border-slate-700">
+                  No Role
+                </Badge>
+              </div>
             </div>
             
             <div class="flex items-center gap-2">
@@ -159,6 +156,13 @@ const deleteUser = async (user: User) => {
           </div>
           <div v-if="users.length === 0" class="p-8 text-center text-slate-400">No users found.</div>
         </div>
+        
+        <PaginationControls 
+          v-if="usersMeta && users.length > 0"
+          :currentPage="usersMeta.currentPage" 
+          :totalPages="usersMeta.totalPages" 
+          @pageChange="currentPage = $event" 
+        />
       </CardContent>
     </Card>
   </div>
