@@ -16,11 +16,17 @@ import TruckSimulation from '@/components/TruckSimulation.vue'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const { data: stats } = useStats()
-const { data: vehiclesData } = useVehicles()
-const { data: trailsData } = useTrails()
+const { data: vehiclesData } = useVehicles(1, 1000)
+const { data: trailsData } = useTrails(1, 1000)
 
-const vehicles = computed(() => vehiclesData.value || [])
-const trails = computed(() => trailsData.value || [])
+const vehicles = computed(() => {
+  const v = vehiclesData.value?.data || vehiclesData.value
+  return Array.isArray(v) ? v : []
+})
+const trails = computed(() => {
+  const t = trailsData.value?.data || trailsData.value
+  return Array.isArray(t) ? t : []
+})
 
 const searchQuery = ref('')
 const selectedAsset = ref<any>(null)
